@@ -24,22 +24,21 @@
 
 #ifndef SRC_PSI_CLASSLIB_SELECT_H_
 #define SRC_PSI_CLASSLIB_SELECT_H_
-#include <vector>
-#include "Expr.h"
-#include "ExprList.h"
+#include <initializer_list>
+#include "ExprTree.h"
+#include "Sequential.h"
 
 namespace psi {
 
-class Select: public Expr {
+class Select: public ExprTree {
 public:
 
-	Select(const ExprList &list);
+	//Select(const ExprList &list);
 
-#ifdef UNDEFINED
-#ifdef PSI_HAVE_CXX_11
-	Select(std::initializer_list<Expr> l) : Select(ExprList(l)) { };
-#endif
-#endif
+	Select(std::initializer_list<Expr> l) : ExprTree(l) 
+  { 
+	  setOp(GraphSelect);
+  };
 
 	virtual ~Select();
 

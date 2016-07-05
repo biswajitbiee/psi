@@ -31,8 +31,6 @@
 
 namespace psi {
 
-class ExprListBuilder;
-
 class Type;
 
 //	_prefix Expr operator _op (const Type &lhs, const Expr &rhs); \
@@ -40,8 +38,8 @@ class Type;
 
 #define DECLARE_OP_FUNCTIONS(_prefix, _op) \
 	_prefix Expr operator _op (const Expr &lhs, const Expr &rhs); \
-	_prefix Expr operator _op (int32_t lhs, const Expr &rhs);     \
-	_prefix Expr operator _op (uint32_t lhs, const Expr &rhs);    \
+	_prefix Expr operator _op (const Expr &lhs, int32_t rhs);     \
+	_prefix Expr operator _op (const Expr &lhs, uint32_t rhs);    \
 
 
 class ExprCore;
@@ -87,26 +85,30 @@ class Expr {
 			ImportCall,
 
 			List,
+      Tree,
 			TypeRef // 30
 		};
 
 	public:
 		Expr();
 
-		Expr(uint32_t v);
+		explicit Expr(uint32_t v);
 
-		Expr(int32_t v);
+		explicit Expr(int32_t v);
 
-		Expr(Type &t);
+		explicit Expr(const Type &t);
 
 		Expr(const Expr &rhs);
+		Expr(Expr&& rhs);
 
-		Expr(ExprCore *rhs);
+		explicit Expr(ExprCore *rhs);
 
 		Expr(const SharedPtr<ExprCore> &ptr);
 
 		virtual ~Expr();
 
+    Expr& operator= (Expr&& rhs);
+    
 		void build();
 
 		const SharedPtr<ExprCore> &getCore() const { return m_core; }
@@ -122,8 +124,6 @@ class Expr {
 		bool isBinOp() const;
 
 		static bool isBinOp(Operator op);
-
-		ExprListBuilder operator,(const Expr &rhs);
 
 		Expr operator [] (const Expr &rhs);
 

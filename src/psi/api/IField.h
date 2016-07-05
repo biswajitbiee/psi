@@ -58,6 +58,9 @@ public:
 
 	virtual FieldAttr getAttr() const = 0;
 
+    virtual int getIntValue(psshandle_t action_handle) const = 0;
+
+    virtual psshandle_t getObjValue(psshandle_t action_handle) const = 0;
 };
 
 

@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include "classlib/ExprCore.h"
 #include "classlib/Type.h"
-#include "classlib/ExprListBuilder.h"
 
 namespace psi {
 
@@ -39,15 +38,23 @@ Expr::Expr(uint32_t v) : m_core(new ExprCore(v)) { }
 
 Expr::Expr(int32_t v) : m_core(new ExprCore(v)) { }
 
-Expr::Expr(Type &t) : m_core(new ExprCore(t)) { }
+Expr::Expr(const Type &t) : m_core(new ExprCore(t)) { }
 
 Expr::Expr(const SharedPtr<ExprCore> &ptr) : m_core(ptr) { }
 
 Expr::Expr(const Expr &rhs) : m_core(rhs.m_core) { }
+	
+Expr::Expr(Expr&& rhs) : m_core(std::move(rhs.m_core)) { }
 
 Expr::Expr(ExprCore *rhs) : m_core(rhs) { }
 
 Expr::~Expr() { }
+
+Expr& Expr::operator= (Expr&& rhs)
+{
+  m_core = std::move(rhs.m_core);
+  return *this;
+}
 
 Expr::Operator Expr::getOp() const {
 	return m_core->m_op;
@@ -62,11 +69,6 @@ bool Expr::isBinOp() const {
 		return isBinOp(m_core->m_op);
 	}
 	return false;
-}
-
-ExprListBuilder Expr::operator,(const Expr &rhs) {
-	fprintf(stdout, "Expr::operator,\n");
-	return ExprListBuilder(*this, rhs);
 }
 
 bool Expr::isBinOp(Operator op) {
@@ -132,10 +134,10 @@ const char *Expr::toString(Operator op) {
 	Expr operator _op (const Expr &lhs, const Expr &rhs) { \
 		return Expr(new ExprCore(_code, lhs, rhs)); \
 	} \
-	Expr operator _op (int32_t lhs, const Expr &rhs) { \
+	Expr operator _op (const Expr &lhs, int32_t rhs) { \
 		return Expr(new ExprCore(_code, lhs, rhs)); \
 	} \
-	Expr operator _op (uint32_t lhs, const Expr &rhs) { \
+	Expr operator _op (const Expr &lhs, uint32_t rhs) { \
 		return Expr(new ExprCore(_code, lhs, rhs)); \
 	}
 

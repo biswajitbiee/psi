@@ -25,9 +25,11 @@
 #ifndef SRC_PSI_CLASSLIB_EXPRLIST_H_
 #define SRC_PSI_CLASSLIB_EXPRLIST_H_
 #include <vector>
+#include <algorithm>
+#include <iterator>
 #include "classlib/Expr.h"
+#include "classlib/ExprTree.h"
 #include "classlib/ExprImportCall.h"
-//#include "classlib/ExprCoreList.h"
 
 namespace psi {
 
@@ -36,33 +38,28 @@ class ExprList : public Expr {
 
 		ExprList();
 
-#ifdef UNDEFINED
-#ifdef PSI_HAVE_CXX_11
-		template <class T> ExprList(T &first) : Expr(new ExprCoreList()) {
+		/*template <class T> ExprList(T &first) : Expr(new ExprCoreList()) {
 			static_cast<ExprCoreList *>(m_core.ptr())->m_exprList.push_back(Expr(first).getCore());
 		}
 		template <class T, class... restT> ExprList(T &first, restT & ...rest) :
 				ExprList(rest...) {
 			std::vector<SharedPtr<ExprCore> > &list = static_cast<ExprCoreList *>(m_core.ptr())->m_exprList;
 			list.insert(list.begin(), Expr(first).getCore());
-		}
-		ExprList(std::initializer_list<Expr> l) {
+		}*/
 
-		}
-#endif
-#endif
+    ExprList(std::initializer_list<Expr> exprlist);
 
 		ExprList(const SharedPtr<ExprCore> &ptr);
 
-		ExprList(const ExprListBuilder &el);
+		ExprList(const Expr &e, const Expr &e2);
 
-//		ExprList(const Expr &e, const Expr &e2);
-
-//		ExprList(const Expr &e);
+		ExprList(const Expr &e);
 
 		ExprList(Type &t);
 
 		ExprList(int v);
+		
+    ExprList(const ExprTree& tree);
 
 		virtual ~ExprList();
 
@@ -72,7 +69,7 @@ class ExprList : public Expr {
 
 	private:
 
-		void traverse_expr_builder(ExprCoreList *c_t, const ExprListBuilder &el);
+		//void traverse_expr_tree(ExprCoreList *c_t, const ExprTree &t);
 
 };
 

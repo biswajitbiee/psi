@@ -26,9 +26,9 @@
 
 namespace psi {
 
-Select::Select(const ExprList &list) : Expr(list) {
-	setOp(GraphSelect);
-}
+//Select::Select(const ExprList &list) : Expr(list) {
+	//setOp(GraphSelect);
+//}
 
 Select::~Select() {
 	// TODO Auto-generated destructor stub

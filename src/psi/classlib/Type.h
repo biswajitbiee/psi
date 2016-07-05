@@ -28,10 +28,15 @@
 #define TYPE_H_
 #include <string>
 #include <vector>
-
+#include "ExprTree.h"
 #include "classlib/Expr.h"
 #include "classlib/ExprList.h"
-#include "classlib/ExprListBuilder.h"
+
+#include "api/IBaseItem.h"
+
+namespace psi_api {
+    class IField;
+};
 
 namespace psi {
 
@@ -99,11 +104,13 @@ public:
 
 		Expr operator [] (const Expr &rhs);
 
-		ExprListBuilder operator,(Type &rhs);
+//		ExprTree operator,(const Type &rhs);
 
 		Expr operator = (const Expr &rhs);
 
 //		Expr operator = (const ExprImportCall &rhs);
+  
+    operator Expr() const { return Expr(*this); }
 
 		// Effectively private.
 		virtual void add(Type *item);
@@ -114,6 +121,19 @@ public:
 
 		static const char *toString(ObjectType t);
 
+    virtual Type* createInstance(psshandle_t psshandle) {
+        // Error! supported only for Action and Struct
+        return 0;
+    }
+
+    void setAPIField(psi_api::IField* ifld) {
+        m_ifld = ifld;
+    }
+
+    psi_api::IField* getAPIField();
+
+    virtual psshandle_t getHandle() { return -1; }
+    
 	protected:
 
 		Type(Type::ObjectType t, Type *p);
@@ -139,6 +159,8 @@ public:
 		Type						*m_type_data;
 
 		FieldAttr					m_attr;
+
+    psi_api::IField * m_ifld;
 
 };
 

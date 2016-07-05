@@ -48,6 +48,11 @@ Elaborator::~Elaborator() {
 	// TODO Auto-generated destructor stub
 }
 
+Action* Elaborator::getActionType(psshandle_t action_handle) {
+    IAction* act_type = m_model->getActionType(action_handle);
+    return m_iaction2action_map[act_type];
+}
+
 void Elaborator::elaborate(Type *root, IModel *model) {
 	vector<Type *>::const_iterator it;
 
@@ -95,6 +100,7 @@ IAction *Elaborator::elaborate_action(Action *c) {
 		// TODO: error handling
 	}
 	IAction *a = m_model->mkAction(c->getName(), super_a);
+    m_iaction2action_map[a] = c;
 
 	set_expr_ctxt(a, c);
 
@@ -434,7 +440,6 @@ void Elaborator::elaborate_package(IModel *model, Package *pkg_cl) {
 
 IBaseItem *Elaborator::elaborate_struct_action_body_item(Type *t) {
 	IBaseItem *ret = 0;
-
 	if (t->getObjectType() == Type::TypeConstraint) {
 		ret = elaborate_constraint(static_cast<Constraint *>(t));
 	} else if (t->getObjectType() == Type::TypeBit) {
@@ -480,6 +485,7 @@ IBaseItem *Elaborator::elaborate_struct_action_body_item(Type *t) {
 
 	}
 
+    t->setAPIField(static_cast<IField*>(ret));
 	return ret;
 }
 
@@ -544,7 +550,8 @@ IFieldRef *Elaborator::elaborate_field_ref(Type *t) {
 }
 
 IGraphStmt *Elaborator::elaborate_graph(Graph *g) {
-	ExprList stmts = g->getSequence();
+	ExprTree stmt_tree = g->getExprTree();
+  ExprCoreList& stmts = static_cast<ExprCoreList&>(*stmt_tree.getCorePtr());
 	if (stmts.getExprList().size() > 1) {
 		std::vector<SharedPtr<ExprCore> >::const_iterator it;
 		IGraphBlockStmt *block = m_model->mkGraphBlockStmt(IGraphStmt::GraphStmt_Block);
@@ -567,31 +574,42 @@ IGraphStmt *Elaborator::elaborate_graph(Graph *g) {
 IGraphStmt *Elaborator::elaborate_graph_stmt(ExprCore *stmt) {
 	IGraphStmt *ret = 0;
 
-	switch (stmt->getOp()) {
-	case Expr::GraphParallel:
-	case Expr::GraphSelect:
-	case Expr::GraphSchedule:
-	case Expr::List: {
-		// All are block statements
-		IGraphBlockStmt *block = m_model->mkGraphBlockStmt(
-				(stmt->getOp() == Expr::GraphParallel)?IGraphStmt::GraphStmt_Parallel:
-						(stmt->getOp() == Expr::GraphSelect)?IGraphStmt::GraphStmt_Select:
-						(stmt->getOp() == Expr::GraphSchedule)?IGraphStmt::GraphStmt_Schedule:
-								IGraphStmt::GraphStmt_Block);
-		ExprCoreList *stmt_l = static_cast<ExprCoreList *>(stmt);
-		std::vector<SharedPtr<ExprCore> >::const_iterator it;
-		for (it=stmt_l->getExprList().begin();
-				it!=stmt_l->getExprList().end(); it++) {
-			IGraphStmt *s = elaborate_graph_stmt((*it).ptr());
-			if (s) {
-				block->add(s);
-			} else {
-				fprintf(stdout, "Error: failed to elaborate %d\n",
-						(*it).ptr()->getOp());
-			}
-		}
-		ret = block;
-	} break;
+  auto op = stmt->getOp();
+  IGraphStmt::GraphStmtType stmt_type = IGraphStmt::GraphStmt_Block;
+	switch (op) {
+    {
+      case Expr::GraphParallel:
+        stmt_type = IGraphStmt::GraphStmt_Select;
+      case Expr::GraphSelect:
+        stmt_type = IGraphStmt::GraphStmt_Parallel;
+      case Expr::GraphSchedule:
+        stmt_type = IGraphStmt::GraphStmt_Schedule;
+      case Expr::Tree: 
+        {
+          auto stmt_type = IGraphStmt::GraphStmt_Block;
+          if(op == Expr::GraphSelect) {
+            stmt_type = IGraphStmt::GraphStmt_Select; 
+          } else if(op == Expr::GraphParallel) {
+            stmt_type = IGraphStmt::GraphStmt_Parallel;
+          } else if (op == Expr::GraphSchedule) {
+            stmt_type = IGraphStmt::GraphStmt_Schedule;
+          }
+
+          // All are block statements
+          IGraphBlockStmt *block = m_model->mkGraphBlockStmt(stmt_type);
+          ExprCoreList *stmt_l = static_cast<ExprCoreList *>(stmt);
+          for (auto it : stmt_l->getExprList())
+          {
+            IGraphStmt *s = elaborate_graph_stmt(it.ptr());
+            if (s) {
+              block->add(s);
+            } else {
+              fprintf(stdout, "Error: failed to elaborate %d\n", it->getOp());
+            }
+          }
+          ret = block;
+        } 
+    }break;
 
 	case Expr::GraphRepeat: {
 		IGraphRepeatStmt::RepeatType type = IGraphRepeatStmt::RepeatType_Forever;

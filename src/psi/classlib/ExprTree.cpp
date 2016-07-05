@@ -14,7 +14,7 @@ namespace psi {
     setOp(Expr::Tree);
 
     ExprCoreList* plist = static_cast<ExprCoreList*>(m_core.ptr());
-    plist->getExprList().push_back(expr.getCore());
+    plist->getExprList().emplace_back(expr.getCore());
   }
       
   ExprTree::ExprTree(std::initializer_list<Expr> exprlist) : Expr(new ExprCoreList()) 
@@ -31,6 +31,6 @@ namespace psi {
   void ExprTree::add(const Expr& item)
   {
     ExprCoreList* plist = static_cast<ExprCoreList*>(m_core.ptr());
-    plist->getExprList().push_back(item.getCore());
+    plist->getExprList().emplace_back(item.getCore());
   }
 }

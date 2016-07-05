@@ -26,6 +26,7 @@
 #ifndef SRC_ELABORATOR_ELABORATOR_H_
 #define SRC_ELABORATOR_ELABORATOR_H_
 #include <vector>
+#include <map>
 
 #include "api/IAction.h"
 #include "api/IBind.h"
@@ -57,6 +58,8 @@ public:
 	virtual ~Elaborator();
 
 	void elaborate(Type *root, IModel *model);
+
+        Action* getActionType(psshandle_t action_handle);
 
 protected:
 
@@ -119,8 +122,7 @@ private:
 	Type					*m_class_expr_ctxt;
 	IModel					*m_model;
 
-
-
+    std::map<IAction*,Action*> m_iaction2action_map;
 };
 
 } /* namespace psi */

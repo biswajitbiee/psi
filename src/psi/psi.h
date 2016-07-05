@@ -56,12 +56,17 @@
 #include "classlib/ResourceStruct.h"
 #include "classlib/Schedule.h"
 #include "classlib/Select.h"
+#include "classlib/Sequential.h"
 #include "classlib/Share.h"
 #include "classlib/StateStruct.h"
 #include "classlib/StreamStruct.h"
 #include "classlib/Struct.h"
 #include "classlib/TypeRgy.h"
 #include "classlib/TypeRegistry.h"
+#include "classlib/Types.h"
+#include "classlib/PsiMacros.h"
+
+
 
 #include "psi_api.h"
 

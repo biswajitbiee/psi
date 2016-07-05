@@ -24,6 +24,8 @@
  */
 
 #include "classlib/BitType.h"
+#include "classlib/Action.h"
+#include "api/IField.h"
 
 namespace psi {
 
@@ -41,8 +43,9 @@ BitType::~BitType() {
 }
 
 uint64_t BitType::get() {
-	// TODO:
-	return 0;
+    Type* obj = getParent();
+    psi_api::IField* f = static_cast<psi_api::IField*>(getAPIField());
+    return f->getIntValue(obj->getHandle());
 }
 
 void BitType::set(uint64_t v) {

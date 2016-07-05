@@ -32,22 +32,21 @@ public:
 		Field<A1>			a1_2 {this, "a1_2"};
 		Field<A1>			a1_3 {this, "a1_3"};
 		Field<A1>			a1_4 {this, "a1_4"};
+		Field<A1>			a1_5 {this, "a1_5"};
 
-		Graph graph {this,
-			(
-				Select {
-					(
-						(a1_1, a1_2),
-						(a1_3, a1_4)
-					)
-				},
-				Parallel {
-					(
-						(a1_1, a1_2),
-						(a1_3, a1_4)
-					)
-				}
-			)
+		Graph graph { this, 
+      a1_5, 
+      Select { 
+        a1_5,
+        Sequential{a1_1, a1_2},
+        Sequential{a1_3, a1_4}
+      },
+      a1_3,
+      Parallel {
+        Sequential{a1_1, a1_2},
+        Sequential{a1_3, a1_4},
+        a1_4
+      }
 		};
 	} graph_select_testT {this};
 

@@ -52,6 +52,7 @@ $debug="false";
 $builddir="";
 $sim="unit";
 $plusargs="";
+$vendor="";
 
 # Global PID list
 @pid_list;
@@ -111,6 +112,9 @@ for ($i=0; $i <= $#ARGV; $i++) {
     } elsif ($arg eq "-sim") {
     	$i++;
     	$sim=$ARGV[$i];
+    } elsif ($arg eq "-vendor") {
+	$i++;
+	$vendor = $ARGV[$i];
     } else {
       print "[ERROR] Unknown option $arg\n";
       printhelp();
@@ -208,6 +212,7 @@ sub printhelp {
   print "    -nobuild            -- Do not automatically build the bench\n";
   print "    -i                  -- Run simulation in GUI mode\n";
   print "    -quiet              -- Suppress console output from simulation\n";
+  print "    -vendor             -- Pass vendor name to process vendor specific target\n";
   print "\n";
   print "Example:\n";
   print "    runtest -test foo_test.f\n";
@@ -444,7 +449,7 @@ sub build {
     	die "No 'scripts' directory present\n";
     }
     
-    open(CP, "make -C ${builddir} -j ${max_par} -f ${SIM_DIR}/scripts/Makefile SIM=${sim} build |");
+    open(CP, "make -C ${builddir} -j ${max_par} -f ${SIM_DIR}/scripts/Makefile SIM=${sim} VENDOR=${vendor} build |");
     open(LOG,"> ${builddir}/compile.log");
     while (<CP>) {
        print($_);
@@ -550,6 +555,7 @@ sub run_jobs {
                     	"-f" ,
                     	"$SIM_DIR/scripts/Makefile",
                     	"SIM=${sim}",
+			"VENDOR=${vendor}",
                     	"SEED=${seed}",
                     	"QUIET=${quiet}",
                     	"TESTNAME=${testname}", 

@@ -1,5 +1,5 @@
 
-# VERBOSE:=true
+ VERBOSE:=true
 
 BUILDDIR := $(BUILD_DIR)
 LIBDIR := $(BUILDDIR)
@@ -15,6 +15,10 @@ define MK_AR
 $(Q)rm -f $@
 $(Q)$(AR) vcq $@ $^
 endef 
+define MK_SO
+$(Q)rm -f $@
+$(Q)$(CXX) -shared -fPIC -o $@ $^ $(CXXFLAGS)
+endef 
 else # End Verbose
 define DO_CXX
 $(Q)echo "CXX $^"
@@ -24,6 +28,11 @@ define MK_AR
 $(Q)rm -f $@
 $(Q)echo "ar $@"
 $(Q)$(AR) cq $@ $^
+endef 
+define MK_SO
+$(Q)rm -f $@
+$(Q)echo "CXX $^"
+$(Q)$(CXX) -shared -fPIC -o $@ $^ $(CXXFLAGS)
 endef 
 endif
 
@@ -36,6 +45,8 @@ CXXFLAGS += -I$(SRCDIR)/psi
 CXXFLAGS += -I$(SRCDIR)/../impl
 CXXFLAGS += -I$(SRCDIR)/apps
 CXXFLAGS += -g
+CXXFLAGS += -std=c++11
+CXXFLAGS += -static-libstdc++
 
 USE_CXX11 := $(call get_plusarg,USE_CXX11,$(PLUSARGS))
 
@@ -56,6 +67,6 @@ COMPILE_REDIR:= 2>&1 | tee compile.log
 endif
 
 $(TESTEXE)$(EXEEXT) : $(SIM_DIR)/src/$(TESTEXE).cpp $(SIM_DIR)/src/test_main.cpp $(TEST_LIBS)
-	$(Q)$(CXX) -o $@ $^ $(RUN_CXXFLAGS) $(CXXFLAGS) $(BUILD_DIR)/libpsi.a -lexpat $(COMPILE_REDIR)
-
-	
+	@echo RUN_CXXFLAGS  = $(RUN_CXXFLAGS);
+	@echo CXXFLAGS  = $(CXXFLAGS);
+	$(Q)$(CXX) -o $@ $^ $(RUN_CXXFLAGS) $(CXXFLAGS) $(BUILD_DIR)/libpsi.a -lexpat $(COMPILE_REDIR) 

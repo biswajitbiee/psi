@@ -36,19 +36,29 @@ class ExprCore {
 	public:
 		friend class Expr;
 
-		ExprCore(uint32_t v);
+		explicit ExprCore(uint32_t v);
 
-		ExprCore(int32_t v);
+		explicit ExprCore(int32_t v);
 
-		ExprCore(Type &t);
+		explicit ExprCore(const Type &t);
 
 		ExprCore(Expr::Operator op, const Expr &lhs, const Expr &rhs);
 
+		ExprCore(Expr::Operator op, uint32_t lhs, const Expr &rhs);
+		ExprCore(Expr::Operator op, int32_t lhs, const Expr &rhs);
+		ExprCore(Expr::Operator op, const Expr &lhs, uint32_t rhs);
+		ExprCore(Expr::Operator op, const Expr &lhs, int32_t rhs);
+		ExprCore(Expr::Operator op, int32_t lhs, int32_t rhs);
+		ExprCore(Expr::Operator op, uint32_t lhs, int32_t rhs);
+
 		ExprCore(Import &import, const Expr &params);
 
-		ExprCore(Expr::Operator op);
+		explicit ExprCore(Expr::Operator op);
 
 		virtual ~ExprCore();
+
+    ExprCore(ExprCore&& rhs);
+    ExprCore& operator=(ExprCore&& rhs);
 
 		Expr::Operator getOp() const { return m_op; }
 

@@ -25,6 +25,8 @@
 #ifndef SRC_API_IBASEITEM_H_
 #define SRC_API_IBASEITEM_H_
 
+typedef unsigned int psshandle_t;
+
 namespace psi_api {
 
 	/**

@@ -37,12 +37,12 @@ Repeat::Repeat(const Expr &body) :
 
 Repeat::~Repeat() { }
 
-ExprListBuilder Repeat::operator,(const Expr &rhs) {
-	return ExprListBuilder(*this, rhs);
-}
+//ExprListBuilder Repeat::operator,(const Expr &rhs) {
+//	return ExprListBuilder(*this, rhs);
+//}
 
-ExprListBuilder Repeat::operator,(const ExprListBuilder &rhs) {
-	return ExprListBuilder(*this, rhs);
-}
+//ExprListBuilder Repeat::operator,(const ExprListBuilder &rhs) {
+//	return ExprListBuilder(*this, rhs);
+//}
 
 } /* namespace psi */

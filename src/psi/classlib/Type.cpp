@@ -24,7 +24,6 @@
  */
 
 #include "classlib/Type.h"
-
 #include <stdio.h>
 #include "classlib/ExprCore.h"
 
@@ -55,12 +54,12 @@ Expr Type::operator [] (const Expr &rhs) {
 	return Expr(new ExprCore(Expr::BinOp_ArrayRef, *this, rhs));
 }
 
-ExprListBuilder Type::operator,(Type &rhs) {
-	return ExprListBuilder(*this, rhs);
-}
+//ExprTree Type::operator,(const Type &rhs) {
+//	return {*this, rhs};
+//}
 
 void Type::add(Type *item) {
-	m_children.push_back(item);
+	m_children.emplace_back(item);
 }
 
 void Type::setObjectType(Type::ObjectType t) {
@@ -113,6 +112,18 @@ bool Type::insideInstance() {
 //	}
 
 	return ret;
+}
+
+psi_api::IField* Type::getAPIField() {
+    if (m_ifld == nullptr) { // instance meta-objects need to fetch the ifield reference from the type meta-object
+      for (auto obj_member : getParent()->getTypeData()->getChildren()) {
+            if (obj_member->getObjectType() == this->getObjectType() && obj_member->getName().compare(getName())==0) {
+                      m_ifld = obj_member->m_ifld;
+                break;
+              }
+      }
+    }
+    return m_ifld;    
 }
 
 

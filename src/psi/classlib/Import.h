@@ -28,6 +28,7 @@
 
 #include "classlib/Expr.h"
 #include "classlib/Type.h"
+#include "classlib/ExprTree.h"
 #include "classlib/ExprImportCall.h"
 
 namespace psi {
@@ -36,7 +37,8 @@ class Import : public Type {
 
 	public:
 
-		Import(Type *p, const std::string &name, const ExprList &plist);
+		//Import(Type *p, const std::string &name, const ExprList &plist);
+		Import(Type *p, const std::string &name, const ExprTree &tree);
 
 		Import(Type *p, const std::string &name,
 				const Type &ret, const ExprList &plist);

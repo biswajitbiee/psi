@@ -25,10 +25,11 @@
 #include "classlib/Struct.h"
 
 #include "classlib/TypeRegistry.h"
+#include "api/IField.h"
 
 namespace psi {
 
-Struct::Struct() : Type(Type::TypeStruct, 0, ""),
+Struct::Struct(Type *p) : Type(Type::TypeStruct, p, ""),
 		m_structType(Struct::Base), m_super(0) { }
 
 Struct::Struct(
@@ -47,6 +48,12 @@ Struct::Struct(
 				Type(Type::TypeStruct, (p)?p:TypeRegistry::global(), name),
 				m_structType(t), m_super(super_type) {
 	m_super = super_type;
+}
+
+psshandle_t Struct::getHandle() {
+    Type* obj = getParent();
+    psi_api::IField* f = static_cast<psi_api::IField*>(getAPIField());
+    return (psshandle_t)f->getIntValue(obj->getHandle());
 }
 
 Struct::~Struct() {

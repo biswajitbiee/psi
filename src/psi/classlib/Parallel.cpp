@@ -27,20 +27,12 @@
 
 namespace psi {
 
-Parallel::Parallel(const ExprList &body) : Expr(body) {
-	setOp(GraphParallel);
-}
+//Parallel::Parallel(const ExprList &body) : Expr(body) {
+//	setOp(GraphParallel);
+//}
 
 Parallel::~Parallel() {
 	// TODO Auto-generated destructor stub
-}
-
-ExprListBuilder Parallel::operator,(const Expr &rhs) {
-	return ExprListBuilder(*this, rhs);
-}
-
-ExprListBuilder Parallel::operator,(const ExprListBuilder &rhs) {
-	return ExprListBuilder(*this, rhs);
 }
 
 } /* namespace psi */

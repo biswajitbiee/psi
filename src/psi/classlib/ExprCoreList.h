@@ -50,6 +50,11 @@ public:
 	const std::vector<SharedPtr<ExprCore> > &getExprList() const {
 		return m_exprList;
 	}
+	
+  std::vector<SharedPtr<ExprCore> > &getExprList() {
+		return m_exprList;
+	}
+
 
 private:
 

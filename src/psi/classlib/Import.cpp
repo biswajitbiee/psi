@@ -29,8 +29,13 @@
 
 namespace psi {
 
-Import::Import(Type *p, const std::string &name, const ExprList &plist) :
-	Type(Type::TypeImport, p, name){
+//Import::Import(Type *p, const std::string &name, const ExprList &plist) :
+//	Type(Type::TypeImport, p, name){
+//}
+
+Import::Import(Type *p, const std::string &name, const ExprTree &tree) :
+  Type(Type::TypeImport, p, name)
+{
 }
 
 Import::Import(Type *p, const std::string &name,

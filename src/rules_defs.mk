@@ -32,20 +32,20 @@ $(INCDIR)/apps/%.h : $(PSI_SRC_DIR)/apps/%.h
 $(INCDIR)/%.h : $(PSI_SRC_DIR)/psi/%.h
 	$(DO_INST)
 
-$(LIBDIR)/libpsi.a : $(foreach o,$(PSI_CL_SRC:.cpp=.o),$(PSI_BUILDDIR)/$(o))
+$(LIBDIR)/libpsi.a : $(foreach o,$(PSI_CL_SRC:.cpp=.o),$(PSI_BUILDDIR)/classlib/$(o))
 	$(MKDIRS)
 	$(MK_AR)
 
-$(PSI_BUILDDIR)/%.o : $(PSI_SRC_DIR)/psi/classlib/%.cpp
-	$(Q)if test ! -d $(PSI_BUILDDIR); then mkdir -p $(PSI_BUILDDIR); fi
+$(PSI_BUILDDIR)/classlib/%.o : $(PSI_SRC_DIR)/psi/classlib/%.cpp
+	$(Q)if test ! -d $(PSI_BUILDDIR)/classlib; then mkdir -p $(PSI_BUILDDIR)/classlib; fi
 	$(DO_CXX) -I$(PSI_SRC_DIR)/psi 
 	
-$(LIBDIR)/libpsi_apps.a : $(foreach o,$(PSI_APPS_SRC:.cpp=.o),$(PSI_BUILDDIR)/$(o))
+$(LIBDIR)/libpsi_apps.a : $(foreach o,$(PSI_APPS_SRC:.cpp=.o),$(PSI_BUILDDIR)/apps/$(o))
 	$(MKDIRS)
 	$(MK_AR)
 
-$(PSI_BUILDDIR)/%.o : $(PSI_SRC_DIR)/apps/%.cpp
-	$(Q)if test ! -d $(PSI_BUILDDIR); then mkdir -p $(PSI_BUILDDIR); fi
+$(PSI_BUILDDIR)/apps/%.o : $(PSI_SRC_DIR)/apps/%.cpp
+	$(Q)if test ! -d $(PSI_BUILDDIR)/apps; then mkdir -p $(PSI_BUILDDIR)/apps; fi
 	$(DO_CXX) -I$(PSI_SRC_DIR)/psi -I$(PSI_SRC_DIR)/apps 
 
 endif

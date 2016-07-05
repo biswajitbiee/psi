@@ -26,6 +26,7 @@
 #ifndef SRC_CLASSLIB_SHAREDPTR_H_
 #define SRC_CLASSLIB_SHAREDPTR_H_
 #include <stdio.h>
+#include <utility>
 #include "classlib/Types.h"
 
 template <class T> class SharedPtr {
@@ -39,19 +40,17 @@ public:
 		}
 	}
 
-//	SharedPtr(T *ptr, int *count) : m_ptr(ptr), m_count(count) {
-//		if (m_count) {
-//			(*m_count)++;
-//		}
-//	}
-
 	SharedPtr(const SharedPtr<T> &p) :
 		m_ptr(p.m_ptr), m_count(p.m_count) {
-
-		if (m_count) {
 			(*m_count)++;
-		}
 	}
+
+  SharedPtr(SharedPtr<T>&& p) :
+    m_ptr(std::move(p.m_ptr)), m_count(std::move(p.m_count)) 
+  {
+    p.m_ptr = nullptr;
+    p.m_count = nullptr;
+  }
 
 	~SharedPtr() {
 		if (m_ptr) {
@@ -62,6 +61,17 @@ public:
 			}
 		}
 	}
+
+  SharedPtr<T>& operator=(SharedPtr<T>&& p)
+  {
+    m_ptr = std::move(p.m_ptr);
+    m_count = std::move(p.m_count);
+
+    p.m_ptr = nullptr;
+    p.m_count = nullptr;
+
+    return *this;
+  }
 
 	T *ptr() const {
 		return m_ptr;

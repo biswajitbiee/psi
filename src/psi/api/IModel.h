@@ -175,10 +175,15 @@ namespace psi_api {
 					IConstraint 	*true_c,
 					IConstraint 	*false_c) = 0;
 
+			virtual IAction* getActionType(psshandle_t action_handle) = 0;
 	};
 
 }
 
+// user entry point for contructing a PS model through PSI
+extern "C" void psi_build_model(psi_api::IModel *model);
 
+// user entry point for post-solve callback
+extern "C" void psi_post_solve(psshandle_t action_handle);
 
 #endif /* SRC_API_IMODEL_H_ */

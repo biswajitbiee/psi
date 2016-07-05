@@ -28,6 +28,7 @@
 #include "api/ILiteral.h"
 #include "api/IModel.h"
 #include "api/IStruct.h"
+#include <iostream>
 
 using namespace psi_api;
 
@@ -152,6 +153,11 @@ class ModelImpl: public IModel {
 				IConstraint 	*true_c,
 				IConstraint 	*false_c);
 
+		virtual IAction* getActionType(psshandle_t action_handle)
+    {
+      std::cout << "This is stub implementation, returning null." << std::endl;
+      return nullptr;
+    };
 
 	private:
 		std::vector<IBaseItem *>	m_children;

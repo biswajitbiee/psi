@@ -31,7 +31,9 @@
 
 namespace psi {
 
+template <class T> class TypeRgy;
 class Struct : public Type {
+	friend TypeRgy<Struct>;
 
 public:
 	enum StructType {
@@ -49,6 +51,8 @@ public:
 		Struct *getSuperType() const { return m_super; }
 
 		StructType getStructType() const { return m_structType; }
+
+    psshandle_t getHandle();
 
 	protected:
 
@@ -85,7 +89,7 @@ public:
 
 
 	private:
-		Struct();
+		Struct(Type *p=0);
 
 	private:
 		StructType						m_structType;

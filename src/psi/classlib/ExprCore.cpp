@@ -36,15 +36,33 @@ ExprCore::ExprCore(int32_t v) : m_op(Expr::LiteralInt) {
 	m_val.i = v;
 }
 
-ExprCore::ExprCore(Type &t) : m_op(Expr::TypeRef) {
-	m_val.ref = &t;
+ExprCore::ExprCore(const Type &t) : m_op(Expr::TypeRef) {
+	m_val.ref = const_cast<Type*>(&t);
 }
 
 ExprCore::ExprCore(Expr::Operator op) : m_op(op) { }
 
 ExprCore::ExprCore(Expr::Operator op, const Expr &lhs, const Expr &rhs) :
-	m_op(op), m_lhs(lhs), m_rhs(rhs) {
-}
+  m_op(op), m_lhs(lhs), m_rhs(rhs) {
+  }
+ExprCore::ExprCore(Expr::Operator op, uint32_t lhs, const Expr &rhs) :
+  m_op(op), m_lhs(Expr(lhs)), m_rhs(rhs) {
+  }
+ExprCore::ExprCore(Expr::Operator op, int32_t lhs, const Expr &rhs) :
+  m_op(op), m_lhs(Expr(lhs)), m_rhs(rhs) {
+  }
+ExprCore::ExprCore(Expr::Operator op, const Expr &lhs, uint32_t rhs) :
+  m_op(op), m_lhs(lhs), m_rhs(Expr(rhs)) {
+  }
+ExprCore::ExprCore(Expr::Operator op, const Expr &lhs, int32_t rhs) :
+  m_op(op), m_lhs(lhs), m_rhs(Expr(rhs)) {
+  }
+ExprCore::ExprCore(Expr::Operator op, int32_t lhs, int32_t rhs) :
+  m_op(op), m_lhs(lhs), m_rhs(Expr(rhs)) {
+  }
+ExprCore::ExprCore(Expr::Operator op, uint32_t lhs, int32_t rhs) :
+  m_op(op), m_lhs(Expr(lhs)), m_rhs(Expr(rhs)) {
+  }
 
 ExprCore::ExprCore(Import &import, const Expr &params) :
 		m_op(Expr::ImportCall), m_lhs(params) {
@@ -55,5 +73,19 @@ ExprCore::~ExprCore() {
 	// TODO Auto-generated destructor stub
 }
 
+ExprCore::ExprCore(ExprCore&& rhs)
+  : m_val(std::move(rhs.m_val)), m_op(std::move(rhs.m_op))
+    , m_lhs(std::move(rhs.m_lhs)), m_rhs(std::move(rhs.m_rhs))
+{
+  
+}
+
+ExprCore& ExprCore::operator=(ExprCore&& rhs)
+{
+  m_val = std::move(rhs.m_val);
+  m_op = std::move(rhs.m_op);
+  m_lhs = std::move(rhs.m_lhs);
+  m_rhs = std::move(rhs.m_rhs);
+}
 
 } /* namespace psi */

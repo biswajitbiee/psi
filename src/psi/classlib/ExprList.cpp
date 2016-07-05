@@ -33,14 +33,36 @@ ExprList::ExprList() : Expr(new ExprCoreList()) { }
 
 ExprList::ExprList(const SharedPtr<ExprCore> &ptr) : Expr(ptr) { }
 
-ExprList::ExprList(const ExprListBuilder &el) : Expr(new ExprCoreList()) {
-	ExprCoreList *c_t = static_cast<ExprCoreList *>(m_core.ptr());
-	traverse_expr_builder(c_t, el);
+//ExprList::ExprList(const ExprListBuilder &el) : Expr(new ExprCoreList()) {
+//	ExprCoreList *c_t = static_cast<ExprCoreList *>(m_core.ptr());
+//	traverse_expr_builder(c_t, el);
+//}
+
+ExprList::ExprList(const Expr &e) : Expr(new ExprCoreList(e)) { }
+
+ExprList::ExprList(std::initializer_list<Expr> exprlist) : Expr(new ExprCoreList()) {
+  ExprCoreList* plist = static_cast<ExprCoreList *>(m_core.ptr());
+  auto& list = plist->getExprList();
+  std::transform(exprlist.begin(), exprlist.end(), std::back_inserter(list),
+      [](const Expr& expr) { return expr.getCore(); });
 }
 
 ExprList::ExprList(Type &t) : Expr(new ExprCoreList(Expr(t))) {
 
 }
+
+ExprList::ExprList(const Expr &e1, const Expr &e2) : Expr(new ExprCoreList(e1, e2)) { }
+
+// TODO: biswajit
+ExprList::ExprList(const ExprTree& tree) : Expr(new ExprCoreList())
+{
+  ExprCoreList* plist = static_cast<ExprCoreList*>(m_core.ptr());
+  auto& list = plist->getExprList();
+  
+  ExprCoreList* tree_list = static_cast<ExprCoreList*>(tree.getCorePtr());
+  std::transform(tree_list->getExprList().begin(), tree_list->getExprList().end(), 
+                std::back_inserter(list), [](const Expr& expr) { return expr.getCore(); });
+} 
 
 ExprList::~ExprList() { }
 
@@ -76,7 +98,24 @@ const std::vector<SharedPtr<ExprCore> > &ExprList::getExprList() const {
 //	return ExprList(m_core);
 //}
 
-void ExprList::traverse_expr_builder(ExprCoreList *c_t, const ExprListBuilder &el) {
+/*void ExprList::traverse_expr_tree(ExprCoreList *c_t, const ExprTree& t) {
+  ExprCoreList* plist = static_cast<ExprCoreList*>(t.getCorePtr());
+
+  for(auto iter : plist->getExprList())
+  {
+    ExprCoreList* sublist = static_cast<ExprCoreList*>(t->getCorePtr());
+    if(sublist->getExprList().size() == 1)
+    {
+      c_t->m_exprList.push_back(SharedPtr<ExprCore>(sublist->getExprList().begin()));
+    }
+    else
+    {
+      ExprCoreList *c_tp = new ExprCoreList();
+      const ExprTree& c_tree = static_cast<ExprTree&>(iter->getCorePtr());
+      traverse_expr_tree(c_tp, c_tree);
+    }
+  }
+
 	if (el.getBuilderList().size() > 0) {
 		// List of builders. Must convert each to an ExprCoreList
 		// and add it to the list we're building
@@ -97,6 +136,6 @@ void ExprList::traverse_expr_builder(ExprCoreList *c_t, const ExprListBuilder &e
 		}
 	}
 
-}
+}*/
 
 } /* namespace psi */

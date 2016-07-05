@@ -26,28 +26,19 @@
 #ifndef SRC_PSI_CLASSLIB_PARALLEL_H_
 #define SRC_PSI_CLASSLIB_PARALLEL_H_
 
-#include "Expr.h"
-#include "ExprListBuilder.h"
+#include <initializer_list>
+#include "ExprTree.h"
 
 namespace psi {
 
-class ExprList;
-class Parallel: public Expr {
+class Parallel: public ExprTree {
 public:
-	Parallel(const ExprList &body);
-
-#ifdef UNDEFINED
-#ifdef PSI_HAVE_CXX_11
-	Parallel(std::initializer_list<Expr> l) : Parallel(ExprList(l)) { };
-#endif
-#endif
+  Parallel(std::initializer_list<Expr> l) : ExprTree(l) 
+  {
+    setOp(GraphParallel); 
+  };
 
 	virtual ~Parallel();
-
-	ExprListBuilder operator,(const Expr &rhs);
-
-	ExprListBuilder operator,(const ExprListBuilder &rhs);
-
 };
 
 } /* namespace psi */

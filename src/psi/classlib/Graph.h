@@ -26,20 +26,45 @@
 #define GRAPH_H_
 #include "classlib/Type.h"
 #include "classlib/ExprList.h"
+#include "classlib/ExprTree.h"
+#include <initializer_list>
 
 namespace psi {
 
 class Graph : public Type {
 
 	public:
-		Graph(Type *p, const ExprList &seq);
+		//Graph(Type *p, const ExprList &seq);
+    
+    Graph(Type *p) : Type(Type::TypeGraph, p) { }
+
+    template<typename... Targs>
+      Graph(Type *p, const Targs&... args) : Type(Type::TypeGraph, p)
+      {
+        add(args...);
+      }
 
 		virtual ~Graph();
 
-		ExprList &getSequence() { return m_seq; }
+		const ExprTree &getExprTree() const { return m_tree; }
+
+  //private:
+
+    template<typename T>
+      void add(const T& item)
+      {
+        m_tree.add(item);
+      }
+
+    template<typename T, typename... Rest>
+      void add(const T& item, const Rest&... rest)
+      {
+        m_tree.add(item);
+        add(rest...);
+      }
 
 	private:
-		ExprList				m_seq;
+    ExprTree m_tree;
 };
 
 } /* namespace psi */

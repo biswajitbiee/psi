@@ -26,6 +26,8 @@
 #ifndef IMPL_FIELDIMPL_H_
 #define IMPL_FIELDIMPL_H_
 #include "api/IField.h"
+#include <iostream>
+#include <limits>
 
 using namespace psi_api;
 
@@ -57,6 +59,18 @@ public:
 
 	virtual FieldAttr getAttr() const { return m_attr; }
 
+    virtual int getIntValue(psshandle_t action_handle) const 
+    {
+      std::cout << "This is stub implementation, returning dummy value : ";
+      std::cout << std::numeric_limits<int>::max() << std::endl; 
+      return std::numeric_limits<int>::max();
+    };
+
+    virtual psshandle_t getObjValue(psshandle_t action_handle) const 
+    {
+      std::cout << "This is stub implementation, returning null.";
+      return 0;
+    };
 
 
 private:

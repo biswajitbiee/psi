@@ -30,7 +30,9 @@
 
 namespace psi {
 
+template <class T> class TypeRgy;
 class Action : public Type {
+	friend TypeRgy<Action>;
 
 	public:
 
@@ -42,8 +44,6 @@ class Action : public Type {
 		virtual ~Action();
 
 		Action *getSuperType() const { return m_super_type; }
-
-	protected:
 
 		/**
 		 * Solver hook method. Enabled by instantiating an inline Exec block
@@ -63,9 +63,21 @@ class Action : public Type {
 		 */
 		virtual void body();
 
+    virtual Type* createInstance(psshandle_t psshandle) {
+        // Need to clone unique copy per handle and assign handle
+        m_psshandle = psshandle;
+        return this;
+    }
+
+    virtual psshandle_t getHandle() { return m_psshandle; }
+
+	private:
+		Action(Type *p);
 
 	private:
 		Action								*m_super_type;
+
+    psshandle_t m_psshandle; // need to use official API handle type
 
 };
 

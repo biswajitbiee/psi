@@ -31,16 +31,21 @@ ExprCoreList::ExprCoreList() : ExprCore(Expr::List) {
 }
 
 ExprCoreList::ExprCoreList(const Expr &e) : ExprCore(Expr::List) {
-	m_exprList.push_back(e.m_core);
+	m_exprList.emplace_back(e.m_core);
 }
 
 ExprCoreList::ExprCoreList(const Expr &e1, const Expr &e2) : ExprCore(Expr::List) {
-	m_exprList.push_back(e1.m_core);
-	m_exprList.push_back(e2.m_core);
+	m_exprList.emplace_back(e1.m_core);
+	m_exprList.emplace_back(e2.m_core);
 }
 
 ExprCoreList::~ExprCoreList() {
 	// TODO Auto-generated destructor stub
+}
+
+void ExprCoreList::add(const Expr& e)
+{
+    m_exprList.emplace_back(e.m_core);
 }
 
 } /* namespace psi */

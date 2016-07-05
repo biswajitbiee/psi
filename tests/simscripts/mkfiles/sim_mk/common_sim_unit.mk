@@ -9,7 +9,7 @@ REDIRECT:= >/dev/null 2>&1
 else
 endif
 
-build : $(LIB_TARGETS) 
+build : $(LIB_TARGETS) $(VENDOR_TARGETS)
 
 
 TESTEXE:=$(call get_plusarg,TESTEXE,$(PLUSARGS))
