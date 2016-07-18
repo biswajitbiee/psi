@@ -25,9 +25,10 @@
 #ifndef SRC_API_IBASEITEM_H_
 #define SRC_API_IBASEITEM_H_
 
-typedef unsigned int psshandle_t;
-
 namespace psi_api {
+
+    typedef unsigned int insthandle_t;
+    const insthandle_t nullhandle = (insthandle_t)-1;
 
 	/**
 	 * Class: IBaseItem

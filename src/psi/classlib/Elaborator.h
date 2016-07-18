@@ -59,7 +59,7 @@ public:
 
 	void elaborate(Type *root, IModel *model);
 
-        Action* getActionType(psshandle_t action_handle);
+    Type* getTypeDecl(psi_api::insthandle_t handle);
 
 protected:
 
@@ -122,7 +122,7 @@ private:
 	Type					*m_class_expr_ctxt;
 	IModel					*m_model;
 
-    std::map<IAction*,Action*> m_iaction2action_map;
+    std::map<IBaseItem*,Type*> m_ibaseitem2type_map;
 };
 
 } /* namespace psi */

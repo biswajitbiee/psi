@@ -52,9 +52,9 @@ public:
 
 		StructType getStructType() const { return m_structType; }
 
-    psshandle_t getHandle();
+	    virtual void setHandle(psi_api::insthandle_t handle) { m_psshandle = handle; }
 
-	protected:
+        psi_api::insthandle_t getHandle();
 
 		/**
 		 * Solver hook method. Enabled by instantiating an inline Exec block
@@ -68,13 +68,7 @@ public:
 		 */
 		virtual void post_solve();
 
-		/**
-		 * Solver hook method. Enabled by instantiating an inline Exec block
-		 * for ExecKind::Body
-		 */
-		virtual void body();
-
-
+	protected:
 
 		Struct(
 				Type 				*p,
@@ -94,6 +88,7 @@ public:
 	private:
 		StructType						m_structType;
 		Struct							*m_super;
+	    psi_api::insthandle_t m_psshandle { psi_api::nullhandle };
 
 };
 

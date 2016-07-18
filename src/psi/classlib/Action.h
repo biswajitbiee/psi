@@ -63,13 +63,15 @@ class Action : public Type {
 		 */
 		virtual void body();
 
-    virtual Type* createInstance(psshandle_t psshandle) {
-        // Need to clone unique copy per handle and assign handle
+    virtual Type* createInstance(psi_api::insthandle_t psshandle) {
+        // An action type instantiated not through TypeDecl will not clone but rather reused itself for all instances
         m_psshandle = psshandle;
         return this;
     }
 
-    virtual psshandle_t getHandle() { return m_psshandle; }
+    virtual void setHandle(psi_api::insthandle_t handle) { m_psshandle = handle; }
+
+    virtual psi_api::insthandle_t getHandle() { return m_psshandle; }
 
 	private:
 		Action(Type *p);
@@ -77,8 +79,8 @@ class Action : public Type {
 	private:
 		Action								*m_super_type;
 
-    psshandle_t m_psshandle; // need to use official API handle type
-
+    psi_api::insthandle_t m_psshandle { psi_api::nullhandle };
+    
 };
 
 } /* namespace psi */

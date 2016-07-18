@@ -15,18 +15,21 @@ void psi_build_model(psi_api::IModel *model) {
 
 #include <map>
 
-static std::map<psshandle_t,Action*> handle2action_map;
+static std::map<psi_api::insthandle_t,Type*> handle2inst_map;
 
-void psi_post_solve(psshandle_t handle) {
-    // Currently only Action supported, need to generalize to structs..
-    Action* act_inst = 0; // = lookup_cached_instances(handle);
-    if (act_inst == 0) {
-        Action* act_type = elab.getActionType(handle);
-        if (act_type  == 0) {
+void psi_post_solve(psi_api::insthandle_t handle) {
+    Type* inst = handle2inst_map[handle];
+    if (inst == 0) {
+        Type* type_decl = elab.getTypeDecl(handle);
+        if (type_decl  == 0) {
             // some kind of error?
         }
-        act_inst = static_cast<Action*>(act_type->createInstance(handle));
-        //cache_instance(act_inst,handle);
-      act_inst->post_solve();
+        inst = type_decl->createInstance(handle);
+        handle2inst_map[handle] = inst;
+        if (dynamic_cast<Struct*>(inst) != nullptr) {
+        	static_cast<Struct*>(inst)->post_solve();
+        } else if (dynamic_cast<Action*>(inst) != nullptr) {
+        	static_cast<Action*>(inst)->post_solve();
+        };
     }
 }

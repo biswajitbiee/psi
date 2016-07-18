@@ -26,6 +26,10 @@
 
 namespace psi {
 
+Constraint::Constraint() : Type(Type::TypeConstraint, nullptr) {}
+
+Constraint::Constraint(const Expr &stmt) : Type(Type::TypeConstraint, nullptr), m_stmt(stmt) {}
+
 Constraint::Constraint(Type *p, const ExprList &stmt) :
 		Type(Type::TypeConstraint, p), m_stmt(stmt) { }
 

@@ -91,6 +91,20 @@ ExprList::~ExprList() { }
 const std::vector<SharedPtr<ExprCore> > &ExprList::getExprList() const {
 	return static_cast<ExprCoreList *>(m_core.ptr())->m_exprList;
 }
+    
+ExprList& ExprList::operator=(const ExprList& other)
+{
+  if(this != &other)
+  {
+    auto otherlist = static_cast<ExprCoreList *>(other.m_core.ptr())->m_exprList;
+    auto& thislist = static_cast<ExprCoreList *>(this->m_core.ptr())->m_exprList;
+    for(auto iter : otherlist)
+    {
+      thislist.emplace_back(iter);
+    }
+  }
+  return *this;
+}
 
 //ExprList ExprList::operator,(const Type &rhs) {
 //	ExprCoreList *c_t = static_cast<ExprCoreList *>(m_core.ptr());

@@ -25,6 +25,7 @@
 #ifndef GRAPH_H_
 #define GRAPH_H_
 #include "classlib/Type.h"
+#include "classlib/Constraint.h"
 #include "classlib/ExprList.h"
 #include "classlib/ExprTree.h"
 #include <initializer_list>
@@ -47,24 +48,39 @@ class Graph : public Type {
 		virtual ~Graph();
 
 		const ExprTree &getExprTree() const { return m_tree; }
+		const std::vector<Constraint> &getConstraints() const { return m_constraints; }
 
   //private:
 
-    template<typename T>
-      void add(const T& item)
+      void add_item(const Constraint& c)
       {
-        m_tree.add(item);
+        m_constraints.emplace_back(c);
       }
+
+      void add_item(const Expr& e)
+      {
+        m_tree.add(e);
+      }
+      void add()
+      {
+      }
+    //template<typename T>
+      //void add(const T& item)
+      //{
+        //m_tree.add(item);
+      //}
 
     template<typename T, typename... Rest>
       void add(const T& item, const Rest&... rest)
       {
-        m_tree.add(item);
+        //m_tree.add(item);
+        add_item(item);
         add(rest...);
       }
 
 	private:
     ExprTree m_tree;
+    std::vector<Constraint> m_constraints;
 };
 
 } /* namespace psi */

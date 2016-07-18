@@ -50,10 +50,12 @@ Struct::Struct(
 	m_super = super_type;
 }
 
-psshandle_t Struct::getHandle() {
-    Type* obj = getParent();
-    psi_api::IField* f = static_cast<psi_api::IField*>(getAPIField());
-    return (psshandle_t)f->getIntValue(obj->getHandle());
+psi_api::insthandle_t Struct::getHandle() {
+	if (m_psshandle == psi_api::nullhandle)
+		// hopefully I am nested in a container which does have a handle
+		m_psshandle = (psi_api::insthandle_t)getAPIField()->getObjValue(getParent()->getHandle());
+
+	return m_psshandle;
 }
 
 Struct::~Struct() {
@@ -65,10 +67,6 @@ void Struct::pre_solve() {
 }
 
 void Struct::post_solve() {
-
-}
-
-void Struct::body() {
 
 }
 

@@ -29,22 +29,30 @@
 
 #include "classlib/Type.h"
 #include "classlib/TypeRgy.h"
+#include "classlib/Constraint.h"
 
 namespace psi {
 
-template <class T> class Field : public T {
-	public:
+  template <class T> class Field : public T {
+    public:
+      Field(Type *p, const std::string &name) : T(p, name) {
+        Type *t = static_cast<Type *>(this);
+        if (t->getObjectType() == Type::TypeAction ||
+            t->getObjectType() == Type::TypeStruct ||
+            t->getObjectType() == Type::TypeComponent) {
+          t->setTypeData(TypeRgy<T>::type_id());
+        }
+      }
 
-		Field(Type *p, const std::string &name) : T(p, name) {
-			Type *t = static_cast<Type *>(this);
-			if (t->getObjectType() == Type::TypeAction ||
-					t->getObjectType() == Type::TypeStruct ||
-					t->getObjectType() == Type::TypeComponent) {
-				t->setTypeData(TypeRgy<T>::type_id());
-			}
-		}
-};
-
+      Field(Type *p, const std::string &name, const Constraint& c) : T(p, name, c) {
+        Type *t = static_cast<Type *>(this);
+        if (t->getObjectType() == Type::TypeAction ||
+            t->getObjectType() == Type::TypeStruct ||
+            t->getObjectType() == Type::TypeComponent) {
+          t->setTypeData(TypeRgy<T>::type_id());
+        }
+      }
+  };
 }
 
 

@@ -33,6 +33,7 @@ namespace psi {
 class Repeat: public Expr {
 public:
 	Repeat(const Expr &expr, const Expr &body);
+	Repeat(unsigned int count, const Expr &body);
 
 	Repeat(const Expr &body);
 

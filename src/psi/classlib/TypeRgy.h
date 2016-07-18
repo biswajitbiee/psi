@@ -50,10 +50,5 @@ public:
 
 template <class T> T *TypeRgy<T>::m_type_id = 0;
 template <class T> bool TypeRgy<T>::m_valid = false;
-
 }
-
-
-
-
 #endif /* SRC_PSI_CLASSLIB_TYPERGY_H_ */

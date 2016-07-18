@@ -15,6 +15,16 @@ namespace psi {
 
 class Bind: public Type {
 public:
+
+	Bind(Type *p, const ExprList &stmt);
+
+	ExprList &getStmt() {
+		return m_stmt;
+	}
+
+/*
+	Bind(Type *p, Type &i1);
+
 	Bind(Type *p, Type &i1, Type &i2);
 
 	Bind(Type *p, Type &i1, Type &i2, Type &i3);
@@ -24,13 +34,16 @@ public:
 	Bind(Type *p, Type &i1, Type &i2, Type &i3, Type &i4, Type &i5);
 
 	Bind(Type *p, const std::vector<Type *> &items);
+*/
 
 	virtual ~Bind();
 
-	const std::vector<Type *> &getItems() const { return m_items; }
+	//const std::vector<Type *> &getItems() const { return m_items; }
 
 private:
-	std::vector<Type *>						m_items;
+	ExprList				m_stmt;
+
+	//std::vector<Type *>						m_items;
 };
 
 } /* namespace psi */

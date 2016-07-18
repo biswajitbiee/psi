@@ -43,6 +43,7 @@
 #include "api/IGraphIfElseStmt.h"
 #include "api/IGraphRepeatStmt.h"
 #include "api/IGraphTraverseStmt.h"
+#include "api/IGraphConstraintStmt.h"
 #include "api/ILiteral.h"
 #include "api/IPackage.h"
 #include "api/IScalarType.h"
@@ -81,7 +82,7 @@ namespace psi_api {
 			/**
 			 * Creates a new bind statement
 			 */
-			virtual IBind *mkBind(const std::vector<IBaseItem *> &targets) = 0;
+			virtual IBind *mkBind(const std::vector<IExpr *> &targets) = 0;
 
 
 			/**
@@ -144,6 +145,8 @@ namespace psi_api {
 					IGraphRepeatStmt::RepeatType type,
 					IExpr *expr, IGraphStmt *body) = 0;
 
+      virtual IGraphConstraintStmt *mkGraphConstraintStmt() = 0;
+
 			virtual ILiteral *mkIntLiteral(int64_t v) = 0;
 
 			virtual ILiteral *mkBitLiteral(uint64_t v) = 0;
@@ -175,7 +178,7 @@ namespace psi_api {
 					IConstraint 	*true_c,
 					IConstraint 	*false_c) = 0;
 
-			virtual IAction* getActionType(psshandle_t action_handle) = 0;
+			virtual IBaseItem* getTypeDecl(insthandle_t handle) = 0;
 	};
 
 }
@@ -184,6 +187,6 @@ namespace psi_api {
 extern "C" void psi_build_model(psi_api::IModel *model);
 
 // user entry point for post-solve callback
-extern "C" void psi_post_solve(psshandle_t action_handle);
+extern "C" void psi_post_solve(psi_api::insthandle_t handle);
 
 #endif /* SRC_API_IMODEL_H_ */

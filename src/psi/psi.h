@@ -61,10 +61,12 @@
 #include "classlib/StateStruct.h"
 #include "classlib/StreamStruct.h"
 #include "classlib/Struct.h"
+#include "classlib/TypeDecl.h"
 #include "classlib/TypeRgy.h"
 #include "classlib/TypeRegistry.h"
 #include "classlib/Types.h"
 #include "classlib/PsiMacros.h"
+#include "classlib/Node.h"
 
 
 

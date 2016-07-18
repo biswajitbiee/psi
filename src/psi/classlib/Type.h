@@ -42,6 +42,7 @@ namespace psi {
 
 class Action;
 class Struct;
+class Constraint;
 
 class Type {
 	friend class Struct;
@@ -121,7 +122,7 @@ public:
 
 		static const char *toString(ObjectType t);
 
-    virtual Type* createInstance(psshandle_t psshandle) {
+    virtual Type* createInstance(psi_api::insthandle_t psshandle) {
         // Error! supported only for Action and Struct
         return 0;
     }
@@ -132,16 +133,22 @@ public:
 
     psi_api::IField* getAPIField();
 
-    virtual psshandle_t getHandle() { return -1; }
+    virtual void setHandle(psi_api::insthandle_t handle) {}
+
+    virtual psi_api::insthandle_t getHandle() { return psi_api::nullhandle; }
+		
+    virtual ~Type();
+    
+    virtual Constraint* get_constraint() { return nullptr; }
+
+    virtual bool has_constraint() const { return false; }
+
     
 	protected:
 
 		Type(Type::ObjectType t, Type *p);
 
 		Type(Type::ObjectType t, Type *p, const std::string &name);
-
-		virtual ~Type();
-
 
 	private:
 

@@ -79,7 +79,7 @@ class ModelImpl: public IModel {
 		 */
 		virtual IAction *mkAction(const std::string &name, IAction *super_type);
 
-		virtual IBind *mkBind(const std::vector<IBaseItem *> &targets);
+		virtual IBind *mkBind(const std::vector<IExpr *> &targets);
 
 		virtual IComponent *mkComponent(const std::string &name);
 
@@ -121,6 +121,8 @@ class ModelImpl: public IModel {
 				IGraphRepeatStmt::RepeatType type,
 				IExpr *expr, IGraphStmt *body);
 
+    virtual IGraphConstraintStmt *mkGraphConstraintStmt() override;
+
 
 		virtual IBinaryExpr *mkBinExpr(
 				IExpr 					*lhs,
@@ -153,7 +155,7 @@ class ModelImpl: public IModel {
 				IConstraint 	*true_c,
 				IConstraint 	*false_c);
 
-		virtual IAction* getActionType(psshandle_t action_handle)
+		virtual IBaseItem* getTypeDecl(insthandle_t handle)
     {
       std::cout << "This is stub implementation, returning null." << std::endl;
       return nullptr;

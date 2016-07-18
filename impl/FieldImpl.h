@@ -59,14 +59,14 @@ public:
 
 	virtual FieldAttr getAttr() const { return m_attr; }
 
-    virtual int getIntValue(psshandle_t action_handle) const 
+    virtual int getIntValue(insthandle_t handle) const 
     {
       std::cout << "This is stub implementation, returning dummy value : ";
       std::cout << std::numeric_limits<int>::max() << std::endl; 
       return std::numeric_limits<int>::max();
     };
 
-    virtual psshandle_t getObjValue(psshandle_t action_handle) const 
+    virtual insthandle_t getObjValue(insthandle_t handle) const 
     {
       std::cout << "This is stub implementation, returning null.";
       return 0;

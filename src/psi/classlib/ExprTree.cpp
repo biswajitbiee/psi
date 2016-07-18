@@ -33,4 +33,11 @@ namespace psi {
     ExprCoreList* plist = static_cast<ExprCoreList*>(m_core.ptr());
     plist->getExprList().emplace_back(item.getCore());
   }
+
+/*  void ExprTree::add(const SharedPtr<Type>& ptr)
+  {
+    ExprCoreList* plist = static_cast<ExprCoreList*>(m_core.ptr());
+  
+    //plist->getExprList().emplace_back(ptr);
+  }*/
 }

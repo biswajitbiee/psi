@@ -32,12 +32,23 @@ namespace psi {
 
 class Constraint : public Type {
 public:
-	Constraint(Type *p, const ExprList &stmt);
+  Constraint();
+  Constraint(const Expr &stmt);
+	Constraint(Type *p , const ExprList &stmt);
 
 	Constraint(
 			Type 					*p,
 			const std::string 		&name,
 			const ExprList 			&stmt);
+
+  Constraint& operator=(const Constraint& c)
+  {
+    if(this != &c)
+    {
+      m_stmt = c.m_stmt; 
+    }
+    return *this;
+  }
 
 	virtual ~Constraint();
 

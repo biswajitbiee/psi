@@ -6,7 +6,18 @@
  */
 #include "psi_tests.h"
 
-static class data_s : public MemoryStruct {
+template <class T> class TypeDecl {
+public:
+	TypeDecl() {
+		fprintf(stdout, "TypeDecl: static\n");
+		m_hndl = new T();
+	}
+
+private:
+	T				*m_hndl;
+};
+
+class data_s : public MemoryStruct {
 public:
 	TypeRgy<data_s>		type_id{this};
 
@@ -18,7 +29,8 @@ public:
 	Constraint address_c {this, address >= 0x1000 && address <= 0x1FFF};
 
 	// Register this type definition
-} data_sT;
+};
+TypeDecl<data_s> _data_s;
 
 static class rw_comp : public Component {
 public:
@@ -73,36 +85,15 @@ public:
 
 		// Action instance needs to know the details of its type. This is
 		// provided via a type-definition reference (eg _rw_comp._write_data)
-		//Field<rw_comp::write_data>		psi_field(wd1);
-		//Field<rw_comp::read_data>		psi_field(rd1, rd1.in_data.address >= 0xdead);
-		//Field<rw_comp::write_data>		psi_field(wd2);
-		//Field<rw_comp::read_data>		psi_field(rd2);
-
-    Node<rw_comp::read_data> rd1{this, "rd1"};
-    Node<rw_comp::read_data> rd2{this, "rd2"};
-    Node<rw_comp::write_data> wd1{this, "wd1"};
-    Node<rw_comp::write_data> wd2{this, "wd2"};
-
-    Graph graph { this, 
-                  rd1.with(rd1.in_data.address <= 0x1200), 
-                  wd1.with(wd1.out_data.address >= 0x3000),
-                  wd2, 
-                  rd2,
-                  Repeat { 5,
-                    Sequential { rd2,
-                      wd2.with(wd2.out_data.address <=0x3000)
-                    }
-                  },
-                  Constraint(nullptr, rd1.in_data.address != rd2.in_data.address),
-                  Constraint(nullptr, wd1.out_data.address != wd2.out_data.address)
-                };
+		Field<rw_comp::write_data>		psi_field(wd1);
+		Field<rw_comp::read_data>		psi_field(rd1);
+		Field<rw_comp::write_data>		psi_field(wd2);
+		Field<rw_comp::read_data>		psi_field(rd2);
 
 		// Only a single graph is permitted per action
-		//Graph graph {this,
-			//wd1, rd1, wd2, rd2, 
-      //Constraint(nullptr, rd1.in_data.address != rd2.in_data.address)
-		//};
-    //Graph g{this, rd1};
+		Graph graph {this,
+			(wd1, rd1, wd2, rd2)
+		};
 
 		Constraint addr_c {this, rd1.in_data.address != rd2.in_data.address };
 
@@ -118,11 +109,11 @@ public:
 
 	// Prototypes for import functions
 	Import do_write {this, "do_write",
-		Sequential{Bit<31,0>("addr"), Bit<31,0>("data")}
+		(Bit<31,0>("addr"), Bit<31,0>("data"))
 	};
 
 	Import do_check {this, "do_check",
-		Sequential{Bit<31,0>("addr"), Bit<31,0>("data")}
+		(Bit<31,0>("addr"), Bit<31,0>("data"))
 	};
 
 } c_methodsT;

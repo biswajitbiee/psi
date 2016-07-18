@@ -151,7 +151,7 @@ void PSI2XML::process_bind(IBind *b) {
 	println("<bind>");
 	inc_indent();
 
-	for (std::vector<IBaseItem *>::const_iterator it=b->getTargets().begin();
+	for (std::vector<IExpr *>::const_iterator it=b->getTargets().begin();
 			it!=b->getTargets().end(); it++) {
 		// TODO:
 	}
@@ -428,6 +428,8 @@ void PSI2XML::process_field(IField *f) {
 			}
 		} else if (dt_i->getType() == IBaseItem::TypeAction) {
 			println(std::string("<action type=\"") + type2string(dt_i) + "\"/>");
+      IAction* action = static_cast<IAction*>(dt_i);
+      process_body(action->getItems());
 		} else if (dt_i->getType() == IBaseItem::TypeStruct) {
 			println(std::string("<struct type=\"") + type2string(dt_i) + "\"/>");
 		} else {
@@ -533,12 +535,23 @@ void PSI2XML::process_graph_stmt(IGraphStmt *stmt) {
 
 		if (t->getWith()) {
 			println("<with>");
-			// TODO: elaborate with constraint
+      IConstraintBlock* c_block = static_cast<IConstraintBlock*>(t->getWith());
+			process_constraint_block(c_block);
 			println("</with>");
 
 			println("</traverse>");
 		}
 	} break;
+
+  case IGraphStmt::GraphStmt_Constraint: {
+    IGraphConstraintStmt* c = static_cast<IGraphConstraintStmt*>(stmt);
+    auto& constraints = c->getConstraints();
+    for(auto constraint : constraints)    
+    {
+      IConstraintBlock* constraint_block = static_cast<IConstraintBlock*>(constraint);
+      process_constraint_block(constraint_block);
+    }
+  } break;
 
 	default: fprintf(stdout, "TODO: handle graph stmt %d\n", stmt->getStmtType());
 

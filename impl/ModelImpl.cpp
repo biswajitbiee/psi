@@ -43,6 +43,7 @@
 #include "GraphBlockStmtImpl.h"
 #include "GraphRepeatStmtImpl.h"
 #include "GraphTraverseStmtImpl.h"
+#include "GraphConstraintStmtImpl.h"
 #include "LiteralImpl.h"
 #include "ScalarTypeImpl.h"
 #include "StructImpl.h"
@@ -51,6 +52,7 @@
 namespace psi {
 
 ModelImpl::ModelImpl() : m_global_pkg("") {
+	add(&m_global_pkg);
 	// TODO Auto-generated constructor stub
 
 }
@@ -118,7 +120,7 @@ IScalarType *ModelImpl::mkScalarType(
 	return new ScalarTypeImpl(t, msb, lsb);
 }
 
-IBind *ModelImpl::mkBind(const std::vector<IBaseItem *> &targets) {
+IBind *ModelImpl::mkBind(const std::vector<IExpr *> &targets) {
 	return new BindImpl(targets);
 }
 
@@ -184,6 +186,11 @@ IGraphRepeatStmt *ModelImpl::mkGraphRepeatStmt(
 		IGraphRepeatStmt::RepeatType type,
 		IExpr *expr, IGraphStmt *body) {
 	return new GraphRepeatStmtImpl(type, expr, body);
+}
+
+IGraphConstraintStmt *ModelImpl::mkGraphConstraintStmt()
+{
+  return new GraphConstraintStmtImpl();
 }
 
 IGraphTraverseStmt *ModelImpl::mkGraphTraverseStmt(

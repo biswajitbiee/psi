@@ -33,7 +33,7 @@ Action::Action(
 		Type 				*p,
 		const std::string 	&name,
 		Action				*super_type) : Type(Type::TypeAction, p, name),
-				m_super_type(super_type) {
+				m_super_type(super_type){
 
 }
 

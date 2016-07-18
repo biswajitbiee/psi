@@ -46,7 +46,10 @@ public:
 		GraphStmt_Repeat,
 
 		/*! Graph action-traversal statement */
-		GraphStmt_Traverse
+		GraphStmt_Traverse,
+
+    // For graph constraint block
+    GraphStmt_Constraint
 	};
 
 public:

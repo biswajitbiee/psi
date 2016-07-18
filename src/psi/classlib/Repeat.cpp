@@ -31,6 +31,10 @@ Repeat::Repeat(const Expr &expr, const Expr &body) :
 		Expr(new ExprCore(Expr::GraphRepeat, expr, body)) {
 }
 
+Repeat::Repeat(unsigned int count, const Expr &body) :
+		Expr(new ExprCore(Expr::GraphRepeat, Expr(count), body)) {
+}
+
 Repeat::Repeat(const Expr &body) :
 		Expr(new ExprCore(Expr::GraphRepeat, Expr(1), body)) {
 }

@@ -48,9 +48,9 @@ Elaborator::~Elaborator() {
 	// TODO Auto-generated destructor stub
 }
 
-Action* Elaborator::getActionType(psshandle_t action_handle) {
-    IAction* act_type = m_model->getActionType(action_handle);
-    return m_iaction2action_map[act_type];
+Type* Elaborator::getTypeDecl(psi_api::insthandle_t handle) {
+    IBaseItem* bi = m_model->getTypeDecl(handle);
+    return m_ibaseitem2type_map[bi];
 }
 
 void Elaborator::elaborate(Type *root, IModel *model) {
@@ -100,7 +100,7 @@ IAction *Elaborator::elaborate_action(Action *c) {
 		// TODO: error handling
 	}
 	IAction *a = m_model->mkAction(c->getName(), super_a);
-    m_iaction2action_map[a] = c;
+    m_ibaseitem2type_map[a] = c;
 
 	set_expr_ctxt(a, c);
 
@@ -137,11 +137,22 @@ IAction *Elaborator::elaborate_action(Action *c) {
 }
 
 IBind *Elaborator::elaborate_bind(Bind *b) {
-	const std::vector<Type *> &items = b->getItems();
-	std::vector<IBaseItem *> items_psi;
+	std::vector<IExpr *> items_psi;
+	Expr &e = b->getStmt();
 
-	// TODO: must map Type references to PSI references
-	// What this really means is converting the Type references to expressions
+	if (e.getOp() != Expr::List) {
+		// Something is wrong here
+		fprintf(stdout, "Internal Error: Expecting ExprList\n");
+	}
+
+	ExprCoreList *l = static_cast<ExprCoreList *>(e.getCore().ptr());
+	std::vector<SharedPtr<ExprCore> >::const_iterator it = l->getExprList().begin();
+
+	for (; it!=l->getExprList().end(); it++) {
+		ExprCore *ec = it->ptr();
+		IExpr *c = elaborate_expr(ec); // really only Expr::TypeRef? - refine!
+		items_psi.push_back(c);
+	}
 
 	return m_model->mkBind(items_psi);
 }
@@ -156,21 +167,28 @@ IComponent *Elaborator::elaborate_component(IScopeItem *scope, Component *c) {
 	std::vector<Type *>::const_iterator it = c->getChildren().begin();
 
 	for (; it!=c->getChildren().end(); it++) {
+		IBaseItem* ret;
 		Type *t = *it;
 
 		set_expr_ctxt(comp, c);
 
 		if (t->getObjectType() == Type::TypeAction) {
-			IAction *a = elaborate_action(static_cast<Action *>(t));
-			comp->add(a);
+			ret = elaborate_action(static_cast<Action *>(t));
 		} else if (t->getObjectType() == Type::TypeStruct) {
-			IStruct *s = elaborate_struct(static_cast<Struct *>(t));
-			comp->add(s);
+			if (t->getAttr() == Type::FieldAttr::AttrPool) {
+				IBaseItem *struct_t = find_type_decl(t->getTypeData());
+				ret = m_model->mkField(t->getName(), struct_t, getAttr(t));
+			} else { // assert that t is a struct declaration, not some other field kind...
+				ret = elaborate_struct(static_cast<Struct *>(t));
+			}
+		} else if (t->getObjectType() == Type::TypeBind) {
+			ret = elaborate_bind(static_cast<Bind *>(t));
 		} else {
 			// TODO:
 			fprintf(stdout, "Error: Unknown component body item %s\n",
 					Type::toString(t->getObjectType()));
 		}
+		comp->add(ret);
 	}
 
 	return comp;
@@ -401,6 +419,7 @@ IStruct *Elaborator::elaborate_struct(Struct *str) {
 	}
 
 	IStruct *s = m_model->mkStruct(str->getName(), t, super_type);
+    m_ibaseitem2type_map[s] = str;
 
 	set_expr_ctxt(s, str);
 
@@ -467,13 +486,16 @@ IBaseItem *Elaborator::elaborate_struct_action_body_item(Type *t) {
 				IScalarType::ScalarType_Chandle, 0, 0);
 		ret = m_model->mkField(it->getName(), field_t, getAttr(it));
 	} else if (t->getObjectType() == Type::TypeAction) {
-		// This is an action-type field
+		// This is an action-type field - need to verify this!
+		if (t->getAttr() != Type::FieldAttr::AttrNone) {
+			//Oh no! What is that?
+		}
 		Action *it = static_cast<Action *>(t);
 		IBaseItem *action_t = find_type_decl(t->getTypeData());
 
 		ret = m_model->mkField(it->getName(), action_t, getAttr(it));
 	} else if (t->getObjectType() == Type::TypeStruct) {
-		// This is an struct-type field
+		// This is an struct-type field - need to verify this!
 		Struct *it = static_cast<Struct *>(t);
 		IBaseItem *struct_t = find_type_decl(t->getTypeData());
 
@@ -552,7 +574,8 @@ IFieldRef *Elaborator::elaborate_field_ref(Type *t) {
 IGraphStmt *Elaborator::elaborate_graph(Graph *g) {
 	ExprTree stmt_tree = g->getExprTree();
   ExprCoreList& stmts = static_cast<ExprCoreList&>(*stmt_tree.getCorePtr());
-	if (stmts.getExprList().size() > 1) {
+  auto& constraints = g->getConstraints();
+	if (stmts.getExprList().size() > 1 || constraints.size() > 0) {
 		std::vector<SharedPtr<ExprCore> >::const_iterator it;
 		IGraphBlockStmt *block = m_model->mkGraphBlockStmt(IGraphStmt::GraphStmt_Block);
 
@@ -564,11 +587,21 @@ IGraphStmt *Elaborator::elaborate_graph(Graph *g) {
 				fprintf(stdout, "Error: failed to elaborate %d\n", (*it).ptr()->getOp());
 			}
 		}
+    if(constraints.size() > 0)
+    {
+      IGraphConstraintStmt *constraint_stmt = m_model->mkGraphConstraintStmt();
+      for(auto c : constraints)
+      {
+        constraint_stmt->add(elaborate_constraint(&c));
+      }
+      block->add(constraint_stmt);
+    }
 
-		return block;
+    return block;
 	} else {
 		return elaborate_graph_stmt(stmts.getExprList().at(0).ptr());
 	}
+
 }
 
 IGraphStmt *Elaborator::elaborate_graph_stmt(ExprCore *stmt) {
@@ -624,14 +657,22 @@ IGraphStmt *Elaborator::elaborate_graph_stmt(ExprCore *stmt) {
 		ret = repeat_stmt;
 	} break;
 
-	case Expr::TypeRef: {
-		IFieldRef *ref = elaborate_field_ref(stmt->getTypePtr());
+	case Expr::TypeRef: 
+  {
+    IFieldRef *ref = elaborate_field_ref(stmt->getTypePtr());
 
-		if (ref) {
-			ret = m_model->mkGraphTraverseStmt(ref, 0);
-		} else {
-			fprintf(stdout, "Error: failed to elaborate action ref\n");
-		}
+    if (ref) {
+      Type *type = stmt->getTypePtr();
+      IConstraint* c = nullptr;
+      if(type->has_constraint())
+      {
+        c = elaborate_constraint(type->get_constraint());
+      }
+
+      ret = m_model->mkGraphTraverseStmt(ref, c);
+    } else {
+      fprintf(stdout, "Error: failed to elaborate action ref\n");
+    }
 	} break;
 
 	}

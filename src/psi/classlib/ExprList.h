@@ -63,6 +63,8 @@ class ExprList : public Expr {
 
 		virtual ~ExprList();
 
+    ExprList& operator=(const ExprList& other);
+
 //		ExprListBuilder operator,(const Expr &rhs);
 
 		const std::vector<SharedPtr<ExprCore> > &getExprList() const;
