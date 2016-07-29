@@ -26,18 +26,14 @@
 #define LOCK_H_
 #include <string>
 
-#include "classlib/Type.h"
-#include "classlib/TypeRgy.h"
+#include "classlib/FieldBase.h"
 
 namespace psi {
 
-template <class T> class Lock: public T {
+template <class T> class Lock: public FieldBase<T> {
 
 	public:
-		Lock(Type *p, const std::string &name) : T(p, name) {
-			Type *t = static_cast<Type *>(this);
-			t->setTypeData(TypeRgy<T>::type_id());
-			t->setAttr(Type::AttrLock);
+		Lock(BaseItem *p, const std::string &name) : FieldBase<T>(FieldItem::AttrLock, p, name) {
 		}
 
 		virtual ~Lock() { }

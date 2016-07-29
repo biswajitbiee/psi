@@ -24,7 +24,7 @@
 
 #ifndef GRAPH_H_
 #define GRAPH_H_
-#include "classlib/Type.h"
+#include "classlib/BaseItem.h"
 #include "classlib/Constraint.h"
 #include "classlib/ExprList.h"
 #include "classlib/ExprTree.h"
@@ -32,15 +32,15 @@
 
 namespace psi {
 
-class Graph : public Type {
+class Graph : public BaseItem {
 
 	public:
 		//Graph(Type *p, const ExprList &seq);
     
-    Graph(Type *p) : Type(Type::TypeGraph, p) { }
+    Graph(BaseItem *p) : BaseItem(BaseItem::TypeGraph, p) { }
 
     template<typename... Targs>
-      Graph(Type *p, const Targs&... args) : Type(Type::TypeGraph, p)
+      Graph(BaseItem *p, const Targs&... args) : BaseItem(BaseItem::TypeGraph, p)
       {
         add(args...);
       }

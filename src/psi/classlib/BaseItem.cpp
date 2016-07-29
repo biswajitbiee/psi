@@ -1,5 +1,5 @@
 /*
- * Type.cpp
+ * BaseItem.cpp
  *
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -23,54 +23,69 @@
  *      Author: ballance
  */
 
-#include "classlib/Type.h"
+#include "classlib/BaseItem.h"
+#include "classlib/NamedBaseItem.h"
+#include "classlib/Model.h"
+
 #include <stdio.h>
 #include "classlib/ExprCore.h"
 
 namespace psi {
 
-Type::Type(Type::ObjectType t, Type *p) :
-		m_type(t), m_name(""), m_parent(p),
-		m_type_data(0), m_attr(AttrNone), m_ifld(nullptr) {
+BaseItem::BaseItem(BaseItem::ObjectType t, BaseItem *p) :
+		m_type(t), m_parent(p), m_meta_data(nullptr) {
+//	if (t != Model) {
+//		BaseItem *scope = Model::global()->getActiveScope();
+////		fprintf(stdout, "BaseItem::BaseItem    p=%s scope=%s\n",
+////				NamedBaseItem::getName(p).c_str(), NamedBaseItem::getName(scope).c_str());
+//
+//		if (p != scope) {
+//			fprintf(stdout, "Error: p=%p scope=%p\n", p, scope);
+//		}
+//	}
+
 	if (p) {
 		p->add(this);
 	}
 }
 
-Type::Type(Type::ObjectType t, Type *p, const std::string &name) :
-		m_type(t), m_name(name), m_parent(p),
-		m_type_data(0), m_attr(AttrNone), m_ifld(nullptr) {
+// Constructor used by Model()
+BaseItem::BaseItem(BaseItem::ObjectType t) :
+		m_type(t), m_parent(0), m_meta_data(nullptr) { }
 
-	if (p) {
-		p->add(this);
-	}
-}
-
-Type::~Type() {
+BaseItem::~BaseItem() {
 	// TODO Auto-generated destructor stub
 }
 
-Expr Type::operator [] (const Expr &rhs) {
+Expr BaseItem::operator [] (const Expr &rhs) {
 	return Expr(new ExprCore(Expr::BinOp_ArrayRef, *this, rhs));
 }
 
-//ExprTree Type::operator,(const Type &rhs) {
-//	return {*this, rhs};
+//ExprListBuilder BaseItem::operator,(const BaseItem &rhs) {
+//	return ExprListBuilder(*this, rhs);
 //}
 
-void Type::add(Type *item) {
-	m_children.emplace_back(item);
+void BaseItem::add(BaseItem *item) {
+//	NamedBaseItem *ni_t = NamedBaseItem::to(this);
+//	NamedBaseItem *ni_it = NamedBaseItem::to(item);
+//
+//	fprintf(stdout, "add %d (%s) -> %d (%s)\n",
+//			item->getObjectType(),
+//			(ni_it)?ni_it->getName().c_str():"NULL",
+//			getObjectType(),
+//			(ni_t)?ni_t->getName().c_str():"NULL");
+	m_children.push_back(item);
 }
 
-void Type::setObjectType(Type::ObjectType t) {
+void BaseItem::setObjectType(BaseItem::ObjectType t) {
 	m_type = t;
 }
 
-const std::vector<Type *> &Type::getChildren() const {
+const std::vector<BaseItem *> &BaseItem::getChildren() const {
 	return m_children;
 }
 
-const char *Type::toString(ObjectType t) {
+const char *BaseItem::toString(ObjectType t) {
 	switch (t) {
 		case TypeAction: return "TypeAction";
 		case TypeBit: return "TypeBit";
@@ -84,46 +99,21 @@ const char *Type::toString(ObjectType t) {
 		case TypeExtendAction: return "TypeExtendAction";
 		case TypeExtendComponent: return "TypeExtendComponent";
 		case TypeExtendStruct: return "TypeExtendStruct";
+		case TypeField: return "TypeField";
 		case TypePackage: return "TypePackage";
 		case TypeString: return "TypeString";
 		case TypeStruct: return "TypeStruct";
-		case TypeRegistry: return "TypeRegistry";
+		case Model: return "Model";
 		case TypeRef: return "TypeRef";
 	}
 
 	return "Unknown";
 }
 
-bool Type::insideInstance() {
+bool BaseItem::insideInstance() {
 	bool ret = false;
 
-	// Traverse up through my hierarchy looking for
-//	Type *
-//	Type *
-//
-//	while (c != nullptr && cp != nullptr) {
-//		if (c->getObjectType() == IObjectType::Action &&
-//				cp->getObjectType() == IObjectType::Action) {
-//			ret = true;
-//			break;
-//		}
-//		c = cp;
-//		cp = cp->getParent();
-//	}
-
 	return ret;
-}
-
-psi_api::IField* Type::getAPIField() {
-    if (m_ifld == nullptr) { // instance meta-objects need to fetch the ifield reference from the type meta-object
-      for (auto obj_member : getParent()->getTypeData()->getChildren()) {
-            if (obj_member->getObjectType() == this->getObjectType() && obj_member->getName().compare(getName())==0) {
-                      m_ifld = obj_member->m_ifld;
-                break;
-              }
-      }
-    }
-    return m_ifld;    
 }
 
 

@@ -27,19 +27,16 @@
 #include <string>
 #include <stdio.h>
 
-#include "classlib/Type.h"
+#include "classlib/FieldBase.h"
+#include "classlib/TypeDecl.h"
 
 namespace psi {
 
 // TODO: may need an OutputBase class to enable binding
-template <class T> class Output : public T {
+template <class T> class Output : public FieldBase<T>  {
 
 	public:
-		Output(Type *p, const std::string &name) : T(p, name) {
-			Type *t = static_cast<Type *>(this);
-			t->setAttr(Type::AttrOutput);
-			t->setTypeData(TypeRgy<T>::type_id());
-		}
+		Output(BaseItem *p, const std::string &name) : FieldBase<T>(FieldItem::AttrOutput, p, name) { }
 
 		virtual ~Output() { }
 };

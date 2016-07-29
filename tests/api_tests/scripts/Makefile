@@ -44,6 +44,7 @@ include $(SIM_DIR)/../../rules_defs.mk
 CXXFLAGS += -I$(SRCDIR)/psi
 CXXFLAGS += -I$(SRCDIR)/../impl
 CXXFLAGS += -I$(SRCDIR)/apps
+CXXFLAGS += -I/usr/include/libxml2
 CXXFLAGS += -g
 CXXFLAGS += -std=c++11
 CXXFLAGS += -static-libstdc++
@@ -69,4 +70,4 @@ endif
 $(TESTEXE)$(EXEEXT) : $(SIM_DIR)/src/$(TESTEXE).cpp $(SIM_DIR)/src/test_main.cpp $(TEST_LIBS)
 	@echo RUN_CXXFLAGS  = $(RUN_CXXFLAGS);
 	@echo CXXFLAGS  = $(CXXFLAGS);
-	$(Q)$(CXX) -o $@ $^ $(RUN_CXXFLAGS) $(CXXFLAGS) $(BUILD_DIR)/libpsi.a -lexpat $(COMPILE_REDIR) 
+	$(Q)$(CXX) -o $@ $^ $(RUN_CXXFLAGS) $(CXXFLAGS) $(BUILD_DIR)/libpsi.a -lexpat -lxml2 $(COMPILE_REDIR) 

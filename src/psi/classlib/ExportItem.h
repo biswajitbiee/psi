@@ -1,5 +1,5 @@
 /*
- * ExportAction.h
+ * ExportItem.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,19 +25,30 @@
 #ifndef SRC_PSI_CLASSLIB_EXPORTACTION_H_
 #define SRC_PSI_CLASSLIB_EXPORTACTION_H_
 
-#include "classlib/Type.h"
+#include "classlib/BaseItem.h"
+#include "classlib/Types.h"
 #include "classlib/Action.h"
 #include "classlib/ExprList.h"
 
 namespace psi {
 
-class ExportAction: public Type {
+class ExportItem: public BaseItem {
 public:
-	ExportAction(Type *p, Action *at);
-	ExportAction(Type *p, Action *at, const ExprList &exp_params);
-	virtual ~ExportAction();
+	ExportItem(BaseItem *p);
+
+	ExportItem(BaseItem *p, const ExprList &exp_params);
+
+	virtual ~ExportItem();
+
+	void setDataType(BaseItem *t) { m_data_type = t; }
+
+	BaseItem *getDataType() const { return m_data_type; }
+
+protected:
+
 
 private:
+	BaseItem				*m_data_type;
 	ExprList				m_exp_params;
 };
 

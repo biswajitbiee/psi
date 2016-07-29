@@ -26,24 +26,31 @@
 #define ACTION_H_
 #include <string>
 
-#include "classlib/Type.h"
+#include "classlib/NamedBaseItem.h"
+#include "classlib/Scope.h"
+#include "classlib/TypePath.h"
+
+namespace psi_api {
+	class IObjectContext;
+	class IBaseItem;
+	struct psshandle_t;
+}
+
+using namespace psi_api;
 
 namespace psi {
 
-template <class T> class TypeRgy;
-class Action : public Type {
-	friend TypeRgy<Action>;
-
+class Elaborator;
+class Action : public NamedBaseItem {
+friend Elaborator;
 	public:
 
-		Action(
-				Type 						*p,
-				const std::string 			&name,
-				Action						*super_type=0);
+		Action(const Scope &p);
 
 		virtual ~Action();
 
-		Action *getSuperType() const { return m_super_type; }
+		const TypePath &getSuperType() const { return m_super_type; }
+
 
 		/**
 		 * Solver hook method. Enabled by instantiating an inline Exec block
@@ -63,7 +70,7 @@ class Action : public Type {
 		 */
 		virtual void body();
 
-    virtual Type* createInstance(psi_api::insthandle_t psshandle) {
+    virtual BaseItem* createInstance(psi_api::insthandle_t psshandle) {
         // An action type instantiated not through TypeDecl will not clone but rather reused itself for all instances
         m_psshandle = psshandle;
         return this;
@@ -74,12 +81,14 @@ class Action : public Type {
     virtual psi_api::insthandle_t getHandle() { return m_psshandle; }
 
 	private:
-		Action(Type *p);
+	virtual void inline_exec_pre(IObjectContext *ctxt, psshandle_t *hndl);
+	virtual void inline_exec_post();	
 
 	private:
-		Action								*m_super_type;
+		  TypePath m_super_type;
+		IObjectContext						*m_ctxt;
 
-    psi_api::insthandle_t m_psshandle { psi_api::nullhandle };
+    	psi_api::insthandle_t m_psshandle { psi_api::nullhandle };
     
 };
 

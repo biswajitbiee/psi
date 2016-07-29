@@ -31,7 +31,8 @@
 
 namespace psi {
 
-class Type;
+class BaseItem;
+
 
 //	_prefix Expr operator _op (const Type &lhs, const Expr &rhs); \
 
@@ -78,7 +79,7 @@ class Expr {
 			Stmt_IfElse,
 
 			GraphParallel,
-			GraphRepeat,
+			GraphRepeat, // 25
 			GraphSchedule,
 			GraphSelect,
 
@@ -96,7 +97,7 @@ class Expr {
 
 		explicit Expr(int32_t v);
 
-		explicit Expr(const Type &t);
+		explicit Expr(const BaseItem &t);
 
 		Expr(const Expr &rhs);
 		Expr(Expr&& rhs);

@@ -35,7 +35,8 @@
 #include "classlib/Constraint.h"
 #include "classlib/Exec.h"
 #include "classlib/Expr.h"
-#include "classlib/ExportAction.h"
+#include "classlib/ExportItem.h"
+#include "classlib/Export.h"
 #include "classlib/ExtendAction.h"
 #include "classlib/ExtendComponent.h"
 #include "classlib/ExtendStruct.h"
@@ -62,11 +63,10 @@
 #include "classlib/StreamStruct.h"
 #include "classlib/Struct.h"
 #include "classlib/TypeDecl.h"
-#include "classlib/TypeRgy.h"
-#include "classlib/TypeRegistry.h"
+#include "classlib/Model.h"
 #include "classlib/Types.h"
 #include "classlib/PsiMacros.h"
-#include "classlib/Node.h"
+#include "classlib/GraphNode.h"
 
 
 

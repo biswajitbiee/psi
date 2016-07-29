@@ -27,31 +27,19 @@
 
 #include <string>
 
-#include "classlib/Type.h"
-#include "classlib/TypeRgy.h"
-#include "classlib/Constraint.h"
+#include "classlib/BaseItem.h"
+#include "classlib/TypeDecl.h"
+#include "classlib/FieldBase.h"
 
 namespace psi {
 
-  template <class T> class Field : public T {
-    public:
-      Field(Type *p, const std::string &name) : T(p, name) {
-        Type *t = static_cast<Type *>(this);
-        if (t->getObjectType() == Type::TypeAction ||
-            t->getObjectType() == Type::TypeStruct ||
-            t->getObjectType() == Type::TypeComponent) {
-          t->setTypeData(TypeRgy<T>::type_id());
-        }
-      }
+template <class T> class Field : public FieldBase<T> {
+	public:
 
-      Field(Type *p, const std::string &name, const Constraint& c) : T(p, name, c) {
-        Type *t = static_cast<Type *>(this);
-        if (t->getObjectType() == Type::TypeAction ||
-            t->getObjectType() == Type::TypeStruct ||
-            t->getObjectType() == Type::TypeComponent) {
-          t->setTypeData(TypeRgy<T>::type_id());
-        }
-      }
+		Field(BaseItem *p, const std::string &name) :
+			FieldBase<T>(FieldItem::AttrNone, p, name) { }
+
+		virtual ~Field() { }
   };
 }
 

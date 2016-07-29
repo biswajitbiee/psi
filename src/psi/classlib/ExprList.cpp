@@ -47,7 +47,7 @@ ExprList::ExprList(std::initializer_list<Expr> exprlist) : Expr(new ExprCoreList
       [](const Expr& expr) { return expr.getCore(); });
 }
 
-ExprList::ExprList(Type &t) : Expr(new ExprCoreList(Expr(t))) {
+ExprList::ExprList(BaseItem &t) : Expr(new ExprCoreList(Expr(t))) {
 
 }
 
@@ -112,6 +112,12 @@ ExprList& ExprList::operator=(const ExprList& other)
 //	return ExprList(m_core);
 //}
 
+void ExprList::append(const Expr &e) {
+	std::vector<SharedPtr<ExprCore> > &l = static_cast<ExprCoreList *>(m_core.ptr())->m_exprList;
+	l.push_back(e.getCore());
+}
+
+
 /*void ExprList::traverse_expr_tree(ExprCoreList *c_t, const ExprTree& t) {
   ExprCoreList* plist = static_cast<ExprCoreList*>(t.getCorePtr());
 
@@ -130,6 +136,8 @@ ExprList& ExprList::operator=(const ExprList& other)
     }
   }
 
+
+void ExprList::traverse_expr_builder(ExprCoreList *c_t, const ExprListBuilder &el) {
 	if (el.getBuilderList().size() > 0) {
 		// List of builders. Must convert each to an ExprCoreList
 		// and add it to the list we're building

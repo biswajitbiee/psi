@@ -24,32 +24,46 @@
  */
 
 #include "classlib/BitType.h"
-#include "classlib/Action.h"
+#include "classlib/FieldItem.h"
 #include "api/IField.h"
 
 namespace psi {
 
 BitType::BitType(
-		Type					*p,
+		BaseItem				*p,
+		uint32_t				msb,
+		uint32_t				lsb) :
+	NamedBaseItem(BaseItem::TypeBit, p), m_msb(msb), m_lsb(lsb) { }
+
+BitType::BitType(
 		const std::string		&name,
 		uint32_t				msb,
-		uint32_t				lsb) : Type(Type::TypeBit, p, name),
-				m_msb(msb), m_lsb(lsb) {
-
+		uint32_t				lsb) :
+	NamedBaseItem(BaseItem::TypeBit, 0), m_msb(msb), m_lsb(lsb) {
+	//fprintf(stdout, "Error: support BitType::BitType(name)\n");
+  setName(name);
 }
 
 BitType::~BitType() {
 	// TODO Auto-generated destructor stub
 }
 
-uint64_t BitType::get() {
-    Type* obj = getParent();
-    psi_api::IField* f = static_cast<psi_api::IField*>(getAPIField());
+/*uint64_t BitType::get() {
+    //BaseItem* obj = getParent();
+    BaseItem* this_item = static_cast<BaseItem*>(this);
+    FieldItem* item = static_cast<FieldItem*>(this_item);
+    if(!item)
+    	std::cout << "NULL" <<std::endl;
+    else{
+    	std::cout << "BitType::Name " << item->getName() << std::endl;
+    	BaseItem* obj = item->getParent();
+    psi_api::IField* f = static_cast<psi_api::IField*>(item->getAPIField());
     return f->getIntValue(obj->getHandle());
-}
+    }
+}*/
 
-void BitType::set(uint64_t v) {
+//void BitType::set(uint64_t v) {
 	// TODO:
-}
+//}
 
 } /* namespace psi */

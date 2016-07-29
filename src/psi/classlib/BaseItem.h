@@ -1,5 +1,5 @@
 /*
- * Type.h
+ * BaseItem.h
  *
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,14 +28,15 @@
 #define TYPE_H_
 #include <string>
 #include <vector>
-#include "ExprTree.h"
+
 #include "classlib/Expr.h"
 #include "classlib/ExprList.h"
+#include "classlib/ExprListBuilder.h"
 
 #include "api/IBaseItem.h"
 
 namespace psi_api {
-    class IField;
+      class IField;
 };
 
 namespace psi {
@@ -44,111 +45,86 @@ class Action;
 class Struct;
 class Constraint;
 
-class Type {
+class BaseItem {
 	friend class Struct;
 
 public:
 	enum ObjectType {
-		TypeAction,
+		TypeAction,    // 0
 		TypeBind,
 		TypeBit,
 		TypeBool,
 		TypeChandle,
-		TypeComponent,
+		TypeComponent, // 5
 		TypeConstraint,
 		TypeImport,
 		TypeInt,
 		TypeExec,
-		TypeExportAction,
+		TypeExportItem, // 10
 		TypeExtendAction,
 		TypeExtendComponent,
 		TypeExtendStruct,
+		TypeField,
 		TypeGraph,
 		TypePackage,
 		TypeString,
-		TypeStruct,
-		TypeRegistry,
+		TypeStruct, // 18
+		Model, // 19
 		TypeRef
-	};
-
-	enum FieldAttr {
-		AttrNone = 0,
-		AttrInput,
-		AttrOutput,
-		AttrLock,
-		AttrShare,
-		AttrRand,
-		AttrPool
 	};
 
 	public:
 
-		virtual Type *getParent() const {
+		virtual void setParent(BaseItem *p) {
+			m_parent = p;
+		}
+
+		virtual BaseItem *getParent() const {
 			return m_parent;
 		}
 
-		inline Type::ObjectType getObjectType() const {
+		inline BaseItem::ObjectType getObjectType() const {
 			return m_type;
 		}
 
-		inline const std::string &getName() const { return m_name; }
-
-		FieldAttr getAttr() const { return m_attr; }
-
-		void setAttr(FieldAttr attr) { m_attr = attr; }
-
-		inline void setTypeData(Type *t) { m_type_data = t; }
-
-		inline Type *getTypeData() const { return m_type_data; }
-
-		Type *operator ()()  { return this; }
+		BaseItem *operator ()()  { return this; }
 
 		Expr operator [] (const Expr &rhs);
 
-//		ExprTree operator,(const Type &rhs);
-
 		Expr operator = (const Expr &rhs);
 
+    	operator Expr() const { return Expr(*this); }
+
 //		Expr operator = (const ExprImportCall &rhs);
-  
-    operator Expr() const { return Expr(*this); }
 
 		// Effectively private.
-		virtual void add(Type *item);
+		virtual void add(BaseItem *item);
 
-		void setObjectType(Type::ObjectType t);
+		void setObjectType(BaseItem::ObjectType t);
 
-		virtual const std::vector<Type *> &getChildren() const;
+		virtual const std::vector<BaseItem *> &getChildren() const;
 
 		static const char *toString(ObjectType t);
 
-    virtual Type* createInstance(psi_api::insthandle_t psshandle) {
-        // Error! supported only for Action and Struct
-        return 0;
-    }
+		virtual ~BaseItem();
 
-    void setAPIField(psi_api::IField* ifld) {
-        m_ifld = ifld;
+    virtual BaseItem* createInstance(psi_api::insthandle_t psshandle) {
+      // Error! supported only for Action and Struct
+      return 0;
     }
-
-    psi_api::IField* getAPIField();
 
     virtual void setHandle(psi_api::insthandle_t handle) {}
 
     virtual psi_api::insthandle_t getHandle() { return psi_api::nullhandle; }
-		
-    virtual ~Type();
     
-    virtual Constraint* get_constraint() { return nullptr; }
+    void setTypeData(BaseItem* data) { m_meta_data = data; }
+    BaseItem*	getTypeData() const { return m_meta_data; }
 
-    virtual bool has_constraint() const { return false; }
-
-    
 	protected:
 
-		Type(Type::ObjectType t, Type *p);
+		BaseItem(BaseItem::ObjectType t, BaseItem *p);
 
-		Type(Type::ObjectType t, Type *p, const std::string &name);
+		BaseItem(BaseItem::ObjectType t);
 
 	private:
 
@@ -156,24 +132,15 @@ public:
 
 	private:
 		ObjectType					m_type;
-		std::string					m_name;
-		Type						*m_parent;
+		BaseItem					*m_parent;
 
-
-		std::vector<Type *>			m_children;
-
-		// Handle to the declaring type for fields
-		Type						*m_type_data;
-
-		FieldAttr					m_attr;
-
-    psi_api::IField * m_ifld;
-
+		std::vector<BaseItem *>		m_children;
+		BaseItem*		m_meta_data;
 };
 
-class TypeRef : public Type {
+class TypeRef : public BaseItem {
 public:
-	TypeRef(const std::string &str) : Type(Type::TypeAction, 0) { }
+	TypeRef(const std::string &str) : BaseItem(BaseItem::TypeAction, 0) { }
 };
 
 } /* namespace psi */

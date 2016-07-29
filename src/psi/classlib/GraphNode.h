@@ -1,5 +1,5 @@
 /*
- * Node.h
+ * GraphNode.h
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,41 +25,27 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
-#include "classlib/Type.h"
 #include "classlib/Constraint.h"
 #include "classlib/SharedPtr.h"
+#include "classlib/Field.h"
 
 namespace psi {
   template<typename T>
-    class Node : public T
+    class GraphNode : public FieldBase<T>
     {
       public:
-        Node(Type* p, const std::string& name) : T(p, name), m_has_constraint(false)
+        GraphNode(BaseItem* p, const std::string& name) : FieldBase<T>(FieldItem::AttrNone, p, name)
         {
-          Type *t = static_cast<Type *>(this);
-          if (t->getObjectType() == Type::TypeAction ||
-              t->getObjectType() == Type::TypeStruct ||
-              t->getObjectType() == Type::TypeComponent) {
-            t->setTypeData(TypeRgy<T>::type_id());
-        }
         }
 
         //SharedPtr<Type> with(const Constraint& c)
-        Node<T>& with(const Constraint& c)
+        GraphNode<T>& with(const Constraint& c)
         {
-          Node<T>* clone = new Node<T>(*this);
-          clone->m_has_constraint = true;
-          clone->m_constraint = c;
+          GraphNode<T>* clone = new GraphNode<T>(*this);
+          clone->m_field.set_constraint(c);
           return *clone;
-          //return SharedPtr<Type>(new Node<T>(*this));
+          //return SharedPtr<Type>(new GraphNode<T>(*this));
         }
-
-        Constraint* get_constraint() override { return &m_constraint; }
-        bool has_constraint() const override { return m_has_constraint; }
-          
-      private:
-        Constraint m_constraint;
-        bool m_has_constraint;
     };
 }
 

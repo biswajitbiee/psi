@@ -28,16 +28,20 @@
 #include <stdint.h>
 #include <string>
 
-#include "classlib/Type.h"
+#include "classlib/NamedBaseItem.h"
 
 namespace psi {
 
-class BitType : public Type {
+class BitType : public NamedBaseItem {
 
 	public:
 		BitType(
-				Type 				*p,
-				const std::string 	&name,
+				BaseItem 			*p,
+				uint32_t			msb,
+				uint32_t			lsb);
+
+		BitType(
+				const std::string	&name,
 				uint32_t			msb,
 				uint32_t			lsb);
 
@@ -53,7 +57,7 @@ class BitType : public Type {
 		 * on fields of this type, and only from within an
 		 * inline-exec callback.
 		 */
-		uint64_t get();
+		//uint64_t get();
 
 		/**
 		 * The set method sets the value of this data field.
@@ -61,7 +65,7 @@ class BitType : public Type {
 		 * of this type, and only from within an
 		 * inline-exec callback.
 		 */
-		void set(uint64_t v);
+		//void set(uint64_t v);
 
 	private:
 

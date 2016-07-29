@@ -6,49 +6,45 @@
  */
 #include "psi_tests.h"
 
-static class C : public Component {
+class C : public Component {
 public:
-	TypeRgy<C>		type_id {this};
-
-	C(Type *p=0, psi_name name="C") : Component(p, name)  { }
+	psi_ctor(C, Component);
 
 	class A : public Action {
 	public:
-		A(Type *p=0, psi_name name="A") : Action(p, name) { }
-	} At {this};
+		psi_ctor(A, Action);
 
-} Ct;
+		Rand<Bit<3,0>>		psi_field(field1);
+	};
+	psi_type(A);
+
+};
+psi_global_type(C);
 
 
 class static_structure : public Component {
-public:
-	TypeRgy<static_structure>		type_id{this};
+	psi_ctor(static_structure, Component);
 
-	Field<C>		c1 {this, "c1"};
-	Field<C>		c2 {this, "c2"};
-
-	static_structure(
-			Type				*p=0,
-			const std::string 	&name="static_structure") : Component(p, name) { }
+	Field<C>		psi_field(c1);
+	Field<C>		psi_field(c2);
 
 	class entry : public Action {
-	public:
-		TypeRgy<entry>			type_id{this};
+		psi_ctor(entry, Action);
 
-		Field<C::A>				a1 {this, "a1"};
-		Field<C::A>				a2 {this, "a2"};
+		//Field<C::A>				psi_field(a1);
+		//Field<C::A>				psi_field(a2);
+    GraphNode<C::A>        a1{this, "a1"};
+    GraphNode<C::A>        a2{this, "a2"};
 
-		entry(Type *p=0, psi_name name="entry") : Action(p, name) { }
-
-		Graph g1 {this, 
-			Repeat {
-				a1, a2
+		Graph g1 {this,
+			Repeat { 5,
+					Sequential {a1, a2.with(a2.field1 < 2) }
 			}
 		};
-
-	} entryT {this};
-
-} static_structureT;
+	};
+	psi_type(entry);
+};
+psi_global_type(static_structure);
 
 
 

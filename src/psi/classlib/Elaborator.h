@@ -27,12 +27,14 @@
 #define SRC_ELABORATOR_ELABORATOR_H_
 #include <vector>
 #include <map>
+#include <stdarg.h>
 
 #include "api/IAction.h"
 #include "api/IBind.h"
 #include "api/IConstraint.h"
 #include "api/IConstraintIf.h"
 #include "api/IExpr.h"
+#include "api/IExec.h"
 #include "api/IGraphStmt.h"
 #include "api/IModel.h"
 #include "api/IPackage.h"
@@ -41,10 +43,12 @@
 #include "classlib/Component.h"
 #include "classlib/Constraint.h"
 #include "classlib/Graph.h"
+#include "classlib/FieldItem.h"
 #include "classlib/Package.h"
-#include "classlib/Type.h"
+#include "classlib/BaseItem.h"
 #include "classlib/Struct.h"
 #include "classlib/ExprCoreIf.h"
+#include "classlib/Exec.h"
 
 using namespace psi_api;
 
@@ -53,13 +57,22 @@ namespace psi {
 class Elaborator {
 public:
 
+	enum LogLevel {
+		OFF,
+		LOW,
+		MED,
+		HIGH
+	};
+
 	Elaborator();
 
 	virtual ~Elaborator();
 
-	void elaborate(Type *root, IModel *model);
+	void set_log_level(LogLevel l) { m_log_level = l; }
 
-    Type* getTypeDecl(psi_api::insthandle_t handle);
+	void elaborate(BaseItem *root, IModel *model);
+
+  BaseItem* getTypeDecl(psi_api::insthandle_t handle);
 
 protected:
 
@@ -82,9 +95,15 @@ protected:
 
 	void elaborate_package(IModel *model, Package *pkg_cl);
 
-	IBaseItem *elaborate_struct_action_body_item(Type *t);
+	IBaseItem *elaborate_struct_action_body_item(BaseItem *t);
 
-	IFieldRef *elaborate_field_ref(Type *ref);
+	IExec *elaborate_exec_item(Exec *e);
+
+	IField *elaborate_field_item(FieldItem *f);
+
+	IFieldRef *elaborate_field_ref(BaseItem *ref);
+
+	IBindPath *elaborate_bind_path(BaseItem *it);
 
 	IGraphStmt *elaborate_graph(Graph *g);
 
@@ -93,36 +112,59 @@ protected:
 
 private:
 
-	void set_expr_ctxt(IBaseItem *model_ctxt, Type *class_ctxt);
+	void set_expr_ctxt(IBaseItem *model_ctxt, BaseItem *class_ctxt);
 
-	static IField::FieldAttr getAttr(Type *t);
+	static IField::FieldAttr getAttr(FieldItem *t);
 
-	IBaseItem *find_type_decl(Type *t);
+	BaseItem *find_cl_type_decl(const TypePath &t);
 
-	static IScopeItem *find_named_scope(
+	IBaseItem *find_type_decl(const TypePath &t);
+
+	IBaseItem *find_type_decl(BaseItem *t);
+
+	static IBaseItem *find_named_scope(
 			const std::vector<IBaseItem *> 	&list,
 			const std::string 				&name);
 
-	static bool should_filter(
-			const std::vector<Type *>		&items,
+	bool should_filter(
+			const std::vector<BaseItem *>		&items,
 			uint32_t						i,
-			const std::vector<Type *>		&type_h);
+			const std::vector<BaseItem *>		&type_h);
 
-	static void build_type_hierarchy(
-			std::vector<Type *>				&type_h,
-			Type							*t);
+	void build_type_hierarchy(
+			std::vector<BaseItem *>				&type_h,
+			BaseItem							*t);
 
 	static IScopeItem *toScopeItem(IBaseItem *it);
 	static INamedItem *toNamedItem(IBaseItem *it);
 
+	static const char *getName(IBaseItem *it);
+
+	static IScopeItem *getSuperType(IScopeItem *it);
+
+	static NamedBaseItem *toNamedItem(BaseItem *it);
+
+	void error(const char *fmt, ...);
+
 	void error(const std::string &msg);
+
+	void debug(LogLevel l, const char *fmt, ...);
+
+	void debug(LogLevel l, const char *fmt, va_list ap);
+
+	void debug_low(const char *fmt, ...);
+
+	void debug_med(const char *fmt, ...);
+
+	void debug_high(const char *fmt, ...);
 
 private:
 	IBaseItem				*m_model_expr_ctxt;
-	Type					*m_class_expr_ctxt;
+	BaseItem				*m_class_expr_ctxt;
 	IModel					*m_model;
 
-    std::map<IBaseItem*,Type*> m_ibaseitem2type_map;
+	LogLevel				m_log_level;
+    std::map<IBaseItem*,BaseItem*> m_ibaseitem2type_map;
 };
 
 } /* namespace psi */

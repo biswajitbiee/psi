@@ -27,6 +27,7 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include "classlib/Types.h"
 #include "classlib/Expr.h"
 #include "classlib/ExprTree.h"
 #include "classlib/ExprImportCall.h"
@@ -55,10 +56,10 @@ class ExprList : public Expr {
 
 		ExprList(const Expr &e);
 
-		ExprList(Type &t);
+		ExprList(BaseItem &t);
 
-		ExprList(int v);
-		
+//		ExprList(int v);
+
     ExprList(const ExprTree& tree);
 
 		virtual ~ExprList();
@@ -71,7 +72,9 @@ class ExprList : public Expr {
 
 	private:
 
-		//void traverse_expr_tree(ExprCoreList *c_t, const ExprTree &t);
+	void append(const Expr &e);	
+	
+	//void traverse_expr_tree(ExprCoreList *c_t, const ExprTree &t);
 
 };
 

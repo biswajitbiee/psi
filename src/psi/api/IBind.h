@@ -8,7 +8,7 @@
 #ifndef SRC_PSI_API_IBIND_H_
 #define SRC_PSI_API_IBIND_H_
 #include "api/IBaseItem.h"
-#include "api/IExpr.h"
+#include "api/IBindPath.h"
 
 namespace psi_api {
 
@@ -17,7 +17,7 @@ public:
 
 	virtual ~IBind() { }
 
-	virtual const std::vector<IExpr *> &getTargets() const = 0;
+	virtual const std::vector<IBindPath *> &getTargets() const = 0;
 
 
 };

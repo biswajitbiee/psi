@@ -32,6 +32,7 @@
 #include "api/IBaseItem.h"
 #include "ActionImpl.h"
 #include "BindImpl.h"
+#include "BindPathImpl.h"
 #include "ComponentImpl.h"
 #include "ConstraintBlockImpl.h"
 #include "ConstraintExprImpl.h"
@@ -52,7 +53,6 @@
 namespace psi {
 
 ModelImpl::ModelImpl() : m_global_pkg("") {
-	add(&m_global_pkg);
 	// TODO Auto-generated constructor stub
 
 }
@@ -120,8 +120,12 @@ IScalarType *ModelImpl::mkScalarType(
 	return new ScalarTypeImpl(t, msb, lsb);
 }
 
-IBind *ModelImpl::mkBind(const std::vector<IExpr *> &targets) {
+IBind *ModelImpl::mkBind(const std::vector<IBindPath *> &targets) {
 	return new BindImpl(targets);
+}
+
+IBindPath *ModelImpl::mkBindPath(const std::vector<IBaseItem *> &path) {
+	return new BindPathImpl(path);
 }
 
 /**
@@ -137,23 +141,21 @@ IComponent *ModelImpl::mkComponent(const std::string &name) {
 
 IExec *ModelImpl::mkTargetTemplateExec(
 		IExec::ExecKind			kind,
+		const std::string		&language,
 		const std::string		&text) {
-	// TODO:
-	return 0;
+	return new ExecImpl(kind, language, text);
 }
 
 IExec *ModelImpl::mkInlineExec(
 		IExec::ExecKind			kind,
 		IInlineExec				*exec) {
-	// TODO:
-	return 0;
+	return new ExecImpl(kind, exec);
 }
 
 IExec *ModelImpl::mkNativeExec(
 		IExec::ExecKind			kind,
 		IExpr					*stmts) {
-	// TODO:
-	return 0;
+	return new ExecImpl(kind, stmts);
 }
 
 IStruct *ModelImpl::mkStruct(

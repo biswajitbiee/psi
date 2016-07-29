@@ -1,5 +1,5 @@
 /*
- * TypeRegistry.h
+ * Model.h
  *
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,25 +27,47 @@
 #define SRC_TYPEREGISTRY_H_
 
 #include <string>
+#include <vector>
 
-#include "classlib/Type.h"
+#include "classlib/BaseItem.h"
+#include "classlib/TypePath.h"
 
 namespace psi {
 
 class Package;
-class TypeRegistry : public Type {
+class Scope;
+class Model : public BaseItem {
 	friend class Package;
 
 	public:
-		TypeRegistry();
+		Model();
 
-		virtual ~TypeRegistry();
+		virtual ~Model();
 
-		static TypeRegistry *global();
+		static Model *global();
+
+		void push_scope(const Scope *p);
+
+		void pop_scope(const Scope *p);
+
+		const std::vector<const Scope *> &get_scope() const;
+
+		TypePath getActiveTypeName(BaseItem *it);
+
+		TypePath getSuperType(BaseItem *it);
+
+		BaseItem *getActiveScope();
+
+		bool in_field_decl() const { return m_in_field_decl; }
+
+		static TypePath demangle(const Scope *s);
 
 	private:
+		std::vector<const Scope *>		m_scope;
+		BaseItem						*m_last_scope;
+		bool							m_in_field_decl;
 
-		static TypeRegistry			*m_global;
+		static Model			*m_global;
 
 };
 

@@ -82,7 +82,9 @@ namespace psi_api {
 			/**
 			 * Creates a new bind statement
 			 */
-			virtual IBind *mkBind(const std::vector<IExpr *> &targets) = 0;
+			virtual IBind *mkBind(const std::vector<IBindPath *> &targets) = 0;
+
+			virtual IBindPath *mkBindPath(const std::vector<IBaseItem *> &elems) = 0;
 
 
 			/**
@@ -92,6 +94,7 @@ namespace psi_api {
 
 			virtual IExec *mkTargetTemplateExec(
 					IExec::ExecKind 		kind,
+					const std::string		&language,
 					const std::string 		&text) = 0;
 
 			virtual IExec *mkInlineExec(

@@ -27,13 +27,30 @@
 #define STRUCT_H_
 #include <string>
 
-#include "classlib/Type.h"
+#include "classlib/NamedBaseItem.h"
+#include "classlib/TypePath.h"
+
+namespace psi_api {
+	class IObjectContext;
+	struct psshandle_t;
+}
+
+using namespace psi_api;
 
 namespace psi {
 
-template <class T> class TypeRgy;
-class Struct : public Type {
-	friend TypeRgy<Struct>;
+class ResourceStruct;
+class StateStruct;
+class MemoryStruct;
+class StreamStruct;
+class Scope;
+class Elaborator;
+class Struct : public NamedBaseItem {
+	friend ResourceStruct;
+	friend StateStruct;
+	friend MemoryStruct;
+	friend StreamStruct;
+	friend Elaborator;
 
 public:
 	enum StructType {
@@ -48,7 +65,7 @@ public:
 
 		virtual ~Struct();
 
-		Struct *getSuperType() const { return m_super; }
+		const TypePath &getSuperType() const { return m_super_type; }
 
 		StructType getStructType() const { return m_structType; }
 
@@ -68,26 +85,31 @@ public:
 		 */
 		virtual void post_solve();
 
-	protected:
+		/**
+		 * Solver hook method. Enabled by instantiating an inline Exec block
+		 * for ExecKind::Body
+		 */
+		virtual void body();
 
-		Struct(
-				Type 				*p,
-				const std::string 	&name,
-				Struct 				*super_type=0);
+	protected:
+	
+	Struct(const Scope &p);
+
+
+	private:
+
+		virtual void inline_exec_pre(IObjectContext *ctxt, psshandle_t *hndl);
+
+		virtual void inline_exec_post();
 
 		Struct(
 				StructType			t,
-				Type 				*p,
-				const std::string 	&name,
-				Struct 				*super_type=0);
-
-
-	private:
-		Struct(Type *p=0);
+				BaseItem			*p);
 
 	private:
 		StructType						m_structType;
-		Struct							*m_super;
+		TypePath						m_super_type;
+		IObjectContext					*m_ctxt;
 	    psi_api::insthandle_t m_psshandle { psi_api::nullhandle };
 
 };

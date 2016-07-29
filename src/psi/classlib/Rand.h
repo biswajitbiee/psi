@@ -27,24 +27,18 @@
 #define SRC_RAND_H_
 #include <string>
 
-#include "classlib/Type.h"
-#include "classlib/TypeRgy.h"
+#include "classlib/FieldBase.h"
+#include "classlib/TypeDecl.h"
 
 namespace psi {
 
-template <class T> class Rand : public T {
+template <class T> class Rand : public FieldBase<T> {
 
 	public:
-		Rand(Type *p, const std::string &name) : T(p, name) {
-			Type *t = static_cast<Type *>(this);
-			t->setAttr(Type::AttrRand);
-			if (t->getObjectType() == Type::TypeStruct) {
-				t->setTypeData(TypeRgy<T>::type_id());
-			}
+		Rand(BaseItem *p, const std::string &name) : FieldBase<T>(FieldItem::AttrRand, p, name) {
 		}
 
 		virtual ~Rand() { };
-
 };
 
 } /* namespace psi */
