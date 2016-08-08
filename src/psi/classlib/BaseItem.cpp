@@ -105,6 +105,7 @@ const char *BaseItem::toString(ObjectType t) {
 		case TypeStruct: return "TypeStruct";
 		case Model: return "Model";
 		case TypeRef: return "TypeRef";
+		case TypeEnum: return "TypeEnum";
 	}
 
 	return "Unknown";

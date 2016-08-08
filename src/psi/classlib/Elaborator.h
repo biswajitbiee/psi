@@ -38,6 +38,8 @@
 #include "api/IGraphStmt.h"
 #include "api/IModel.h"
 #include "api/IPackage.h"
+#include "api/IEnum.h"
+#include "api/IExtend.h"
 #include "classlib/Action.h"
 #include "classlib/Bind.h"
 #include "classlib/Component.h"
@@ -49,6 +51,9 @@
 #include "classlib/Struct.h"
 #include "classlib/ExprCoreIf.h"
 #include "classlib/Exec.h"
+#include "classlib/Enum.h"
+#include "classlib/ExtendEnum.h"
+#include "classlib/ExtendItem.h"
 
 using namespace psi_api;
 
@@ -109,6 +114,8 @@ protected:
 
 	IGraphStmt *elaborate_graph_stmt(ExprCore *stmt);
 
+  IEnum*  elaborate_enum(Enum* e);
+  IExtend*  elaborate_extend(BaseItem* b);
 
 private:
 

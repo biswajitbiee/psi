@@ -74,6 +74,14 @@ void Elaborator::elaborate(BaseItem *root, IModel *model) {
 			IStruct *s = elaborate_struct(static_cast<Struct *>(t));
 			m_model->getGlobalPackage()->add(s);
 		}
+    else if(t->getObjectType() == BaseItem::TypeEnum) {
+      IEnum* e = elaborate_enum(static_cast<Enum*>(t));
+      m_model->getGlobalPackage()->add(e); 
+    }
+    else if(t->getObjectType() == BaseItem::TypeExtendEnum) {
+      IExtend* e = elaborate_extend(t);
+      m_model->getGlobalPackage()->add(e);
+    }
 	}
 
 	// Next, go through and declare global scopes
@@ -86,12 +94,36 @@ void Elaborator::elaborate(BaseItem *root, IModel *model) {
 			IComponent *c = elaborate_component(m_model, static_cast<Component *>(t));
 			fprintf(stdout, "elaborate component: %s\n", c->getName().c_str());
 //			m_model->add(c);
-		} else if (t->getObjectType() != BaseItem::TypeStruct) {
+		} else if (t->getObjectType() != BaseItem::TypeStruct 
+        && t->getObjectType() != BaseItem::TypeEnum
+        && t->getObjectType() != BaseItem::TypeExtendEnum) {
 			// Error:
 			error(std::string("Unsupported root element: ") +
 					BaseItem::toString(t->getObjectType()));
 		}
 	}
+}
+
+IEnum*  Elaborator::elaborate_enum(Enum* e)
+{
+  return m_model->mkEnum(e->getName(), e->getEnums());  
+}
+  
+IExtend*  Elaborator::elaborate_extend(BaseItem* b)
+{
+  IExtend* extend = nullptr;
+  if(b->getObjectType() == BaseItem::TypeExtendEnum)
+  {
+    ExtendBase* ex_base = dynamic_cast<ExtendBase*>(b);
+    ExtendItem ei = ex_base->getExtendItem();
+    Enum* eb = static_cast<Enum*>(ei.getDataType());
+    Enum* e = static_cast<Enum*>(b);
+    std::map<unsigned int, std::string> e_diff;
+    std::set_difference(e->getEnums().begin(), e->getEnums().end()
+        , eb->getEnums().begin(), eb->getEnums().end(), std::inserter(e_diff, e_diff.end()));
+    extend = m_model->mkExtendEnum(e->getName(), e_diff);
+  }
+  return extend;
 }
 
 IAction *Elaborator::elaborate_action(Action *action) {
@@ -180,7 +212,10 @@ IComponent *Elaborator::elaborate_component(IScopeItem *scope, Component *c) {
 		} else if (t->getObjectType() == BaseItem::TypeBind) {
 			IBind *b = elaborate_bind(static_cast<Bind *>(t));
 			comp->add(b);
-		} else {
+		} else if (t->getObjectType() == BaseItem::TypeEnum) {
+      IEnum* e = elaborate_enum(static_cast<Enum*>(t));
+      comp->add(e); 
+    } else {
 			// TODO:
 			fprintf(stdout, "Error: Unknown component body item %s\n",
 					BaseItem::toString(t->getObjectType()));

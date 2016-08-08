@@ -66,6 +66,8 @@
 #include "classlib/Model.h"
 #include "classlib/Types.h"
 #include "classlib/PsiMacros.h"
+#include "classlib/Enum.h"
+#include "classlib/ExtendEnum.h"
 #include "classlib/GraphNode.h"
 
 

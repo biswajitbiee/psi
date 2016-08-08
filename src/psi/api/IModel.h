@@ -26,6 +26,7 @@
 #define SRC_API_IMODEL_H_
 #include <vector>
 #include <string>
+#include <map>
 
 #include "api/IAction.h"
 #include "api/IBaseItem.h"
@@ -49,6 +50,7 @@
 #include "api/IScalarType.h"
 #include "api/IScopeItem.h"
 #include "api/IStruct.h"
+#include "api/IEnum.h"
 
 namespace psi_api {
 
@@ -180,6 +182,12 @@ namespace psi_api {
 					IExpr 			*cond,
 					IConstraint 	*true_c,
 					IConstraint 	*false_c) = 0;
+
+      virtual IEnum* mkEnum(const std::string& name, 
+          const std::map<unsigned int, std::string>& enumMap) = 0;
+			
+      virtual IExtend *mkExtendEnum(const std::string& name,
+          const std::map<unsigned int, std::string>& enumMap) = 0;
 
 			virtual IBaseItem* getTypeDecl(insthandle_t handle) = 0;
 	};

@@ -49,6 +49,7 @@
 #include "ScalarTypeImpl.h"
 #include "StructImpl.h"
 #include "BinaryExprImpl.h"
+#include "ExtendEnumImpl.h"
 
 namespace psi {
 
@@ -262,4 +263,14 @@ IConstraintIf *ModelImpl::mkConstraintIf(
 	return new ConstraintIfImpl(cond, true_c, false_c);
 }
 
+IEnum* ModelImpl::mkEnum(const std::string& name, const enumMapT& enumMap)
+{
+  return new EnumImpl(name, enumMap);
+}
+
+IExtend* ModelImpl::mkExtendEnum(const std::string& name,
+    const std::map<unsigned int, std::string>& enumMap)
+{
+  return new ExtendEnumImpl(name, enumMap);
+}
 } /* namespace psi */

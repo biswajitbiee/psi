@@ -1,6 +1,8 @@
 #ifndef INCLUDED_PSI_MACROS_H
 #define INCLUDED_PSI_MACROS_H
 
+#include "classlib/PsiEnum.h"
+
 /**
  * Helper macro for declaring fields.
  */

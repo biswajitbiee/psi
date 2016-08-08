@@ -28,6 +28,7 @@
 #include "api/ILiteral.h"
 #include "api/IModel.h"
 #include "api/IStruct.h"
+#include "EnumImpl.h"
 #include <iostream>
 
 using namespace psi_api;
@@ -157,6 +158,10 @@ class ModelImpl: public IModel {
 				IExpr 			*cond,
 				IConstraint 	*true_c,
 				IConstraint 	*false_c);
+
+    virtual IEnum* mkEnum(const std::string& name, const enumMapT& enumMap);
+    virtual IExtend *mkExtendEnum(const std::string& name,
+          const std::map<unsigned int, std::string>& enumMa);
 
 		virtual IBaseItem* getTypeDecl(insthandle_t handle)
     {
