@@ -8,14 +8,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include "psi_tests.h"
-#include "ModelImpl.h"
-#include "PSI2XML.h"
-#include "XML2PSI.h"
-#include "PSI2PSS.h"
-#include "PSSXmlValidator.h"
+#include "pss_tests.h"
+#include "classlib_impl/ModelImp.h"
+#include "api_impl/ModelImpl.h"
+#include "apps/PSI2XML.h"
+#include "apps/XML2PSI.h"
+#include "apps/PSI2PSS.h"
+#include "apps/PSSXmlValidator.h"
+#include "classlib_impl/Elaborator.h"
 
 using namespace psi::apps;
+using namespace psi;
 
 void build_model(IModel *) __attribute__((weak));
 
@@ -43,9 +46,9 @@ void build_model(IModel *model) {
 		}
 	}
 
-	BaseItem *global = Model::global();
+	BaseItemImp *global = pss::ModelImp::global();
 	elab.set_log_level(l);
-	elab.elaborate(Model::global(), model);
+	elab.elaborate(pss::ModelImp::global(), model);
 }
 
 void exec_model(IModel *model) {
@@ -53,8 +56,8 @@ void exec_model(IModel *model) {
 }
 
 int main(int argc, char **argv) {
-	ModelImpl  			model;
-	ModelImpl  			xml_model;
+  ModelImpl  			model;
+  ModelImpl  			xml_model;
 	PSI2XML    			psi2xml;
 	XML2PSI    			xml2psi;
 	PSI2PSS    			psi2pss;

@@ -2,11 +2,11 @@ PSI_DIR  := $(shell cd $(dir $(lastword $(MAKEFILE_LIST))); pwd)
 
 ifneq (1,$(RULES))
 
-include $(PSI_DIR)/src/rules_defs.mk
+include $(PSI_DIR)/scripts/rules_defs.mk
 
 LIB_TARGETS += $(LIBDIR)/libpsi_impl.a
 
-PSI_IMPL_SRC := $(notdir $(wildcard $(PSI_DIR)/impl/*.cpp))
+PSI_IMPL_SRC := $(notdir $(wildcard $(PSI_DIR)/contrib/api_impl/*.cpp))
 
 ifneq ("$(VENDOR)", "")
 include $(PSI_DIR)/rules_defs_$(VENDOR).mk
@@ -16,14 +16,14 @@ else
 
 psi : $(LIBDIR)/libpsi.a $(LIBDIR)/libpsi_apps.a $(LIBDIR)/libpsi_impl.a $(VENDOR_TARGETS)
 
-$(PSI_BUILDDIR)/impl/%.o : $(PSI_DIR)/impl/%.cpp
-	$(Q)if test ! -d $(PSI_BUILDDIR)/impl; then mkdir -p $(PSI_BUILDDIR)/impl; fi
-	$(DO_CXX) -I$(PSI_DIR)/impl -I$(PSI_DIR)/src/psi
+$(PSI_BUILDDIR)/api_impl/%.o : $(PSI_DIR)/contrib/api_impl/%.cpp
+	$(Q)if test ! -d $(PSI_BUILDDIR)/api_impl; then mkdir -p $(PSI_BUILDDIR)/api_impl; fi
+	$(DO_CXX) -I$(PSI_DIR)/contrib/api_impl -I$(PSI_DIR)/include
 	
-$(LIBDIR)/libpsi_impl.a : $(foreach o,$(PSI_IMPL_SRC:.cpp=.o),$(PSI_BUILDDIR)/impl/$(o))
+$(LIBDIR)/libpsi_impl.a : $(foreach o,$(PSI_IMPL_SRC:.cpp=.o),$(PSI_BUILDDIR)/api_impl/$(o))
 	$(Q)if test ! -d $(LIBDIR); then mkdir -p $(LIBDIR); fi
 	$(MK_AR)
 
-include $(PSI_DIR)/src/rules_defs.mk
+include $(PSI_DIR)/scripts/rules_defs.mk
 
 endif

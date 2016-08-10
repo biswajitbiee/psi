@@ -5,28 +5,28 @@
  *      Author: ballance
  */
 
-#include "psi.h"
+#include "pss.h"
 
-using namespace psi;
+using namespace pss;
 
 class graph_seq_comp : public Component {
 public:
-	psi_ctor(graph_seq_comp, Component);
+	pss_ctor(graph_seq_comp, Component);
 
 	class A1 : public Action {
 	public:
-		psi_ctor(A1, Action);
+		pss_ctor(A1, Action);
 
 	};
-	psi_type(A1);
+	pss_type(A1);
 
 	class graph_seq_test : public Action {
 	public:
-		psi_ctor(graph_seq_test, Action);
+		pss_ctor(graph_seq_test, Action);
 
-		Field<A1> psi_field(a1);
-		Field<A1> psi_field(a2);
-		Field<A1> psi_field(a3);
+		Field<A1> pss_field(a1);
+		Field<A1> pss_field(a2);
+		Field<A1> pss_field(a3);
 
 		Graph graph {this, Sequential {
 			a1, a2, a3
@@ -34,10 +34,10 @@ public:
 		};
 
 	};
-	psi_type(graph_seq_test);
+	pss_type(graph_seq_test);
 
 };
-psi_global_type(graph_seq_comp);
+pss_global_type(graph_seq_comp);
 
 
 

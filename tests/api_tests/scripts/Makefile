@@ -41,10 +41,10 @@ include $(SIMSCRIPTS_DIR)/mkfiles/plusargs.mk
 include $(SIM_DIR)/../../rules_defs.mk
 
 
-CXXFLAGS += -I$(SRCDIR)/psi
-CXXFLAGS += -I$(SRCDIR)/../impl
-CXXFLAGS += -I$(SRCDIR)/apps
-CXXFLAGS += -I/usr/include/libxml2
+#CXXFLAGS += -I$(SRCDIR)/psi
+#CXXFLAGS += -I$(SRCDIR)/../impl
+#CXXFLAGS += -I$(SRCDIR)/apps
+#CXXFLAGS += -I/usr/include/libxml2
 CXXFLAGS += -g
 CXXFLAGS += -std=c++11
 CXXFLAGS += -static-libstdc++
