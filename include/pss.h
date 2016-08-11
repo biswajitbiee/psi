@@ -65,6 +65,8 @@
 #include "classlib/TypeDecl.h"
 #include "classlib/Types.h"
 #include "classlib/PssMacros.h"
+#include "classlib/Enum.h"
+#include "classlib/ExtendEnum.h"
 #include "classlib/GraphNode.h"
 
 

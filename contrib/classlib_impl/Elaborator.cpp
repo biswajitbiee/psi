@@ -38,6 +38,9 @@
 #include "ExprCoreList.h"
 #include "ExprImp.h"
 #include "InlineExecClosure.h"
+#include "ExtendItemImp.h"
+#include "EnumImp.h"
+#include "classlib/ExtendEnumBase.h"
 
 namespace pss {
 
@@ -72,6 +75,14 @@ void Elaborator::elaborate(BaseItemImp *root, IModel *model) {
 			IStruct *s = elaborate_struct(static_cast<StructImp *>(t));
 			m_model->getGlobalPackage()->add(s);
 		}
+    else if(t->getObjectType() == BaseItemImp::TypeEnum) {
+      IEnum* e = elaborate_enum(static_cast<EnumImp*>(t));
+      m_model->getGlobalPackage()->add(e); 
+    }
+    else if(t->getObjectType() == BaseItemImp::TypeExtendEnum) {
+      IExtend* e = elaborate_extend(t);
+      m_model->getGlobalPackage()->add(e);
+    }
 	}
 
 	// Next, go through and declare global scopes
@@ -84,12 +95,35 @@ void Elaborator::elaborate(BaseItemImp *root, IModel *model) {
 			IComponent *c = elaborate_component(m_model, static_cast<ComponentImp *>(t));
 			fprintf(stdout, "elaborate component: %s\n", c->getName().c_str());
 //			m_model->add(c);
-		} else if (t->getObjectType() != BaseItemImp::TypeStruct) {
+		} else if (t->getObjectType() != BaseItemImp::TypeStruct 
+        && t->getObjectType() != BaseItemImp::TypeEnum
+        && t->getObjectType() != BaseItemImp::TypeExtendEnum) {
 			// Error:
 			error(std::string("Unsupported root element: ") +
 					BaseItemImp::toString(t->getObjectType()));
 		}
 	}
+}
+
+IEnum*  Elaborator::elaborate_enum(EnumImp* ei)
+{
+  return m_model->mkEnum(ei->getName(), ei->getEnums());  
+}
+  
+IExtend*  Elaborator::elaborate_extend(BaseItemImp* b)
+{
+  IExtend* extend = nullptr;
+  if(b->getObjectType() == BaseItemImp::TypeExtendEnum)
+  {
+    ExtendEnumBase* ex_base = dynamic_cast<ExtendEnumBase*>(b->master());
+    const ExtendItem& ei = ex_base->getExtendItem();
+    EnumImp* eb = static_cast<EnumImp*>(static_cast<ExtendItemImp*>(ei.impl())->getDataType());
+    EnumImp* e = static_cast<EnumImp*>(b);
+    std::map<unsigned int, std::string> e_diff;
+    std::set_difference(e->getEnums().begin(), e->getEnums().end(), eb->getEnums().begin(), eb->getEnums().end(), std::inserter(e_diff, e_diff.end()));
+    extend = m_model->mkExtendEnum(e->getName(), e_diff);
+  }
+  return extend;
 }
 
 IAction *Elaborator::elaborate_action(ActionImp *action) {
@@ -178,7 +212,10 @@ IComponent *Elaborator::elaborate_component(IScopeItem *scope, ComponentImp *c) 
 		} else if (t->getObjectType() == BaseItemImp::TypeBind) {
 			IBind *b = elaborate_bind(static_cast<BindImp *>(t));
 			comp->add(b);
-		} else {
+		} else if (t->getObjectType() == BaseItemImp::TypeEnum) {
+      IEnum* e = elaborate_enum(static_cast<EnumImp*>(t));
+      comp->add(e); 
+    } else {
 			// TODO:
 			fprintf(stdout, "Error: Unknown component body item %s\n",
 					BaseItemImp::toString(t->getObjectType()));

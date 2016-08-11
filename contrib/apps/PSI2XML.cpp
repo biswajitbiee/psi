@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <iostream>
 
 namespace psi {
 namespace apps {
@@ -98,6 +99,14 @@ void PSI2XML::process_pkg(IPackage *pkg) {
 			case IBaseItem::TypeExec:
 				process_exec(static_cast<IExec *>(i));
 				break;
+
+      case IBaseItem::TypeEnum:
+        process_enum(static_cast<IEnum*>(i));
+        break;
+
+      case IBaseItem::TypeExtend:
+        process_extend(static_cast<IExtend*>(i));
+        break;
 
 			default:
 				error("Unsupported package item: %d\n", i->getType());
@@ -195,6 +204,10 @@ void PSI2XML::process_body(
 		case IBaseItem::TypeExec:
 			process_exec(static_cast<IExec *>(i));
 			break;
+
+    case IBaseItem::TypeEnum:
+      process_enum(static_cast<IEnum*>(i));
+      break;
 
 		default:
 			fprintf(stdout, "Error: Unknown body item %d\n", i->getType());
@@ -592,6 +605,44 @@ void PSI2XML::process_graph_block_stmt(IGraphBlockStmt *block, const char *tag) 
 	if (tag) {
 		exit(tag);
 	}
+}
+  
+void PSI2XML::process_enum(IEnum* e)
+{
+  std::string tag = "enum name=\"" + e->getName() + "\"";
+  enter(tag);
+
+  auto enums = e->getEnums();
+  for(auto e_iter : enums)
+  {
+    std::string subtag = "<pss:enumerator name=\"";
+    subtag += e_iter.second;
+    subtag += "\"";
+    subtag += " value=\"";
+    subtag += std::to_string(e_iter.first);
+    subtag += "\"/>";
+    println(subtag);
+  }
+  
+  exit("enum");
+}
+  
+void PSI2XML::process_extend(IExtend* e)
+{
+  switch(e->getExtendType())
+  {
+    case IExtend::ExtendType_Enum:
+      {
+        IEnum* en = dynamic_cast<IEnum*>(e);
+        enter("extend");
+        process_enum(en);
+        exit("extend");
+      }
+      break;
+
+    default:
+      break;
+  };
 }
 
 std::string PSI2XML::type2string(IBaseItem *it) {

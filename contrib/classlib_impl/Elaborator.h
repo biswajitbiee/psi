@@ -38,6 +38,8 @@
 #include "api/IGraphStmt.h"
 #include "api/IModel.h"
 #include "api/IPackage.h"
+#include "api/IEnum.h"
+#include "api/IExtend.h"
 #include "ActionImp.h"
 #include "BindImp.h"
 #include "ComponentImp.h"
@@ -51,11 +53,12 @@
 #include "ExprCoreIf.h"
 #include "TypePathImp.h"
 #include "NamedBaseItemImp.h"
+//#include "EnumImp.h"
 
 using namespace psi_api;
 
 namespace pss {
-
+class EnumImp;
 class Elaborator {
 public:
 
@@ -112,6 +115,8 @@ protected:
 
 	IGraphStmt *elaborate_graph_stmt(ExprCore *stmt);
 
+  IEnum*  elaborate_enum(EnumImp* e);
+  IExtend*  elaborate_extend(BaseItemImp* b);
 
 private:
 

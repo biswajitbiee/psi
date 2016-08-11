@@ -22,6 +22,8 @@
 #ifndef INCLUDED_PSS_MACROS_H
 #define INCLUDED_PSS_MACROS_H
 
+#include "PssEnum.h"
+
 #ifdef PSS_HAVE_CXX_11
 
 /**

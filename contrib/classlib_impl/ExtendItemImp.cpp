@@ -28,7 +28,7 @@
 namespace pss {
 
 ExtendItem::ExtendItem(const Scope &p, BaseItem *type_hndl) :
-		BaseItem(new ExtendItemImp(this, p.impl()->parent(), BaseItemImp::TypeExtendAction, type_hndl)) {
+		BaseItem(new ExtendItemImp(this, nullptr, BaseItemImp::TypeExtendEnum, type_hndl)) {
 	// TODO: need to pass through an extension type
 }
 

@@ -60,7 +60,9 @@ public:
 		TypeString,
 		TypeStruct, // 18
 		Model, // 19
-		TypeRef
+		TypeRef,
+    TypeEnum,
+    TypeExtendEnum
 	};
 
 public:
