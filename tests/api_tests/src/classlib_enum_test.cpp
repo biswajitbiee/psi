@@ -14,9 +14,9 @@ pss_global_type(enum_ext_ext);
 
 int enum_test();
 
-class comp : public Component
+class pss_top : public Component
 {
-  pss_ctor(comp, Component);
+  pss_ctor(pss_top, Component);
 
   pss_enum(enum_base2, RED, BLUE=5, GREEN)
   pss_type(enum_base2);
@@ -29,26 +29,41 @@ class comp : public Component
     Rand<enum_base> pss_field(e);
     Rand<enum_ext> pss_field(e_ext);
 
+    Constraint c {this, e_ext <= enum_ext_ext::THREE};
+
     enum_ext_ext e1{enum_base::THREE};
     const int i = enum_test();
+
+    virtual void pre_solve() {
+      std::cout << "Hi from Subaction::pre_solve, setting local var enum value to FIVE" << std::endl;
+      e1.set(enum_ext_ext::FIVE);
+      e1 = enum_ext_ext::FIVE;
+    }
+    virtual void post_solve() {
+      std::cout << "Hi from Subaction::post_solve, asserting that loal var enum value is FIVE" << std::endl;
+      assert(e1.get() == enum_ext_ext::FIVE);
+      assert(e1 == enum_ext_ext::FIVE);
+    }
+
+
   };
   pss_type(SubAction);
 };
-pss_global_type(comp);
+pss_global_type(pss_top);
 
 int enum_test() {
 
   enum_base b1{enum_base::ZERO};
-  comp::enum_base2 b2;
+  pss_top::enum_base2 b2;
 
   b1.set(enum_base::TWO);
-  b2 = comp::enum_base2::RED;
+  b2 = pss_top::enum_base2::RED;
   b1 = enum_base::TWO;
   assert(enum_base::TWO == b1.get());
-  assert(comp::enum_base2::RED == b2.get());
+  assert(pss_top::enum_base2::RED == b2.get());
 
   b1 = enum_base::ZERO;
-  b2 = comp::enum_base2::GREEN;
+  b2 = pss_top::enum_base2::GREEN;
 
   if (b1 == enum_base::ZERO) {
     std::cout << "b1 is " << b1 << std::endl;
