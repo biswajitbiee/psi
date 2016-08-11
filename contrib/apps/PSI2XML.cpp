@@ -607,21 +607,31 @@ void PSI2XML::process_graph_block_stmt(IGraphBlockStmt *block, const char *tag) 
 	}
 }
   
-void PSI2XML::process_enum(IEnum* e)
+void PSI2XML::process_enum(IEnum* e, bool isExtend)
 {
-  std::string tag = "enum name=\"" + e->getName() + "\"";
-  enter(tag);
+  if(isExtend)
+  {
+    enter("enum");
+  }
+  else
+  {
+    std::string tag = "enum name=\"" + e->getName() + "\"";
+    enter(tag);
+  }
 
   auto enums = e->getEnums();
   for(auto e_iter : enums)
   {
     std::string subtag = "<pss:enumerator name=\"";
     subtag += e_iter.second;
-    subtag += "\"";
-    subtag += " value=\"";
-    subtag += std::to_string(e_iter.first);
-    subtag += "\"/>";
+    subtag += "\">";
     println(subtag);
+    inc_indent();
+    enter("value");
+    subtag = "<pss:number>" + std::to_string(e_iter.first) + "</pss:number>";
+    println(subtag);
+    exit("value");
+    exit("enumerator");
   }
   
   exit("enum");
@@ -634,8 +644,9 @@ void PSI2XML::process_extend(IExtend* e)
     case IExtend::ExtendType_Enum:
       {
         IEnum* en = dynamic_cast<IEnum*>(e);
-        enter("extend");
-        process_enum(en);
+        std::string tag = "extend name=\"" + en->getName() + "\"";
+        enter(tag);
+        process_enum(en, true);
         exit("extend");
       }
       break;
@@ -741,7 +752,9 @@ void PSI2XML::type2data_type(IBaseItem *dt_i, const std::string &tag) {
 				dt_i->getType() == IBaseItem::TypeStruct ||
 				dt_i->getType() == IBaseItem::TypeComponent) {
 			type2hierarchical_id(dt_i, "user");
-		} else {
+		} else if (dt_i->getType() == IBaseItem::TypeEnum) {
+      type2hierarchical_id(dt_i, "enum");
+    }else {
 			println("<pss:unknown-type/>");
 		}
 	} else {
@@ -834,6 +847,7 @@ INamedItem *PSI2XML::toNamedItem(IBaseItem *it) {
 	case IBaseItem::TypeComponent: return static_cast<IComponent *>(it);
 	case IBaseItem::TypeField: return static_cast<IField *>(it);
 	case IBaseItem::TypeStruct: return static_cast<IStruct *>(it);
+	case IBaseItem::TypeEnum: return static_cast<IEnum *>(it);
 	}
 
 	return 0;

@@ -12,28 +12,43 @@ pss_global_type(enum_ext);
 pss_enum_ext(enum_ext_ext, enum_ext, FIVE = 5, SIX)
 pss_global_type(enum_ext_ext);
 
+int enum_test();
+
 class comp : public Component
 {
   pss_ctor(comp, Component);
 
   pss_enum(enum_base2, RED, BLUE=5, GREEN)
   pss_type(enum_base2);
+  Rand<enum_ext_ext> pss_field(e_ext_ext);
+
+  class SubAction : public Action {
+  public:
+    pss_ctor(SubAction, Action);
+    
+    Rand<enum_base> pss_field(e);
+    Rand<enum_ext> pss_field(e_ext);
+
+    enum_ext_ext e1{enum_base::THREE};
+    const int i = enum_test();
+  };
+  pss_type(SubAction);
 };
 pss_global_type(comp);
 
-/*int main(int, char**) {
+int enum_test() {
 
   enum_base b1{enum_base::ZERO};
-  enum_base2 b2;
+  comp::enum_base2 b2;
 
   b1.set(enum_base::TWO);
-  b2 = enum_base2::ZERO;
+  b2 = comp::enum_base2::RED;
   b1 = enum_base::TWO;
   assert(enum_base::TWO == b1.get());
-  assert(enum_base2::ZERO == b2.get());
+  assert(comp::enum_base2::RED == b2.get());
 
   b1 = enum_base::ZERO;
-  b2 = enum_base2::ZERO;
+  b2 = comp::enum_base2::GREEN;
 
   if (b1 == enum_base::ZERO) {
     std::cout << "b1 is " << b1 << std::endl;
@@ -64,5 +79,7 @@ pss_global_type(comp);
   }
 
   return 0;
-}*/
+}
+
+//static int i = enum_test();
 

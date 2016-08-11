@@ -30,6 +30,7 @@
 #include "FieldItemImp.h"
 #include "PackageImp.h"
 #include "StructImp.h"
+#include "EnumImp.h"
 
 namespace pss {
 
@@ -67,6 +68,8 @@ NamedBaseItemImp *NamedBaseItemImp::to(BaseItemImp *it) {
 		case BaseItemImp::TypeField: return static_cast<FieldItemImp *>(it);
 		case BaseItemImp::TypePackage: return static_cast<PackageImp *>(it);
 		case BaseItemImp::TypeStruct: return static_cast<StructImp *>(it);
+		case BaseItemImp::TypeEnum: return static_cast<EnumImp *>(it);
+		case BaseItemImp::TypeExtendEnum: return static_cast<EnumImp *>(it);
 		}
 	}
 

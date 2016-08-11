@@ -86,7 +86,7 @@ private:
 
 	void process_graph_block_stmt(IGraphBlockStmt *block, const char *tag=0);
 
-  void process_enum(IEnum* e);
+  void process_enum(IEnum* e, bool isExtend = false);
   void process_extend(IExtend* e);
 
 	static std::string type2string(IBaseItem *it);

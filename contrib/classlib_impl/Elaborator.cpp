@@ -678,7 +678,9 @@ IField *Elaborator::elaborate_field_item(FieldItemImp *f) {
 	} else if (dt->getObjectType() == BaseItemImp::TypeComponent) {
 		// This is a component-type field
 		ft = find_type_decl(dt);
-	} else {
+	} else if (dt->getObjectType() == BaseItemImp::TypeEnum || dt->getObjectType() == BaseItemImp::TypeExtendEnum) {
+    ft = find_type_decl(dt); 
+  } else {
 		// Error
 	}
 
@@ -1282,6 +1284,8 @@ INamedItem *Elaborator::toNamedItem(IBaseItem *it) {
 	case IBaseItem::TypeComponent: return static_cast<IComponent *>(it);
 	case IBaseItem::TypeField: return static_cast<IField *>(it);
 	case IBaseItem::TypePackage: return static_cast<IPackage *>(it);
+	case IBaseItem::TypeEnum: return static_cast<IEnum *>(it);
+//	case IBaseItem::TypeExtendEnum: return static_cast< *>(it);
 	}
 	return 0;
 }
